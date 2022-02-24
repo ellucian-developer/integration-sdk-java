@@ -1,0 +1,13 @@
+.idea/
+.project
+.settings
+.classpath
+target/
+*.iml
+integration-sdk-java.iml
+.vscode/
+release.properties
+*.orig
+*.releaseBackup
+dependency-reduced-pom.xml
+deploySettings.xml
