@@ -1,6 +1,6 @@
 /*
  * ******************************************************************************
- *   Copyright  2020 Ellucian Company L.P. and its affiliates.
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
  * ******************************************************************************
  */
 package com.ellucian.ethos.integration.client;
@@ -21,7 +21,7 @@ import java.util.Set;
  * the HTTP response status code.  This class contains mostly getter methods on attributes to reduce the
  * possibility of response values being changed.
  */
-public class EthosResponse {
+public class EthosResponse<T> {
 
     // ==========================================================================
     // Attributes
@@ -41,6 +41,11 @@ public class EthosResponse {
      * The response body content.
      */
     private String content;
+
+    /**
+     * The response body content generic type object.  Used if generic types are specified with this class.
+     */
+    private T typedContent;
 
     /**
      * The URL that the corresponding request was made for.
@@ -114,6 +119,14 @@ public class EthosResponse {
     }
 
     /**
+     * Gets the content as a generic type, if specified with this class.
+     * @return The response body content as a generic type.
+     */
+    public T getContentAsType() {
+        return typedContent;
+    }
+
+    /**
      * Gets the URL which the corresponding request was made for.
      * @return the requested URL.
      */
@@ -127,5 +140,16 @@ public class EthosResponse {
      */
     public void setRequestedUrl(String requestedUrl) {
         this.requestedUrl = requestedUrl;
+    }
+
+    /**
+     * Sets the content as a generic type object.
+     * @param contentAsType The generic type object to set for content.
+     */
+    public void setContentAsType( T contentAsType ) {
+        if( contentAsType != null ) {
+            this.typedContent = contentAsType;
+            this.content = null;  // Null out the content to reduce memory bloat.
+        }
     }
 }

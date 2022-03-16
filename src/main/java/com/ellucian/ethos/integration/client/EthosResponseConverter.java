@@ -1,6 +1,6 @@
 /*
  * ******************************************************************************
- *   Copyright  2020 Ellucian Company L.P. and its affiliates.
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
  * ******************************************************************************
  */
 package com.ellucian.ethos.integration.client;
@@ -11,11 +11,13 @@ import com.ellucian.ethos.integration.client.errors.EthosError;
 import com.ellucian.ethos.integration.client.messages.ChangeNotification;
 import com.ellucian.ethos.integration.client.messages.ChangeNotificationFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.http.Header;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,8 +34,13 @@ public class EthosResponseConverter extends EthosResponseBuilder {
     // ==========================================================================
     // Attributes
     // ==========================================================================
+
+    /** The date format to use when handling date fields. */
+    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
     /**
-     * A Jackson objectMapper to count the number of rows in the response body content.
+     * A Jackson objectMapper to count the number of rows in the response body content,
+     * and to convert to the response body to a generic type object.
      */
     protected ObjectMapper objectMapper;
 
@@ -42,7 +49,9 @@ public class EthosResponseConverter extends EthosResponseBuilder {
      */
     public EthosResponseConverter() {
         super();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( DATE_FORMAT );
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.setDateFormat( simpleDateFormat );
     }
 
     // ==========================================================================
@@ -388,6 +397,39 @@ public class EthosResponseConverter extends EthosResponseBuilder {
             return null;
         }
         return ChangeNotificationFactory.createCNListFromJson( ethosResponse.getContent() );
+    }
+
+    /**
+     * Converts the EthosResponse content into a list of generic typed objects based on the given class.
+     * @param ethosResponse The EthosResponse containing content to convert.
+     * @param cls A class reference of the generic type object to convert to.
+     * @param <T> The generic type returned.
+     * @return A list of generic type objects from the content of the EthosResponse, according to the given class.
+     * @throws JsonProcessingException Thrown if the object mapper cannot read the content of the EthosResponse.
+     */
+    public <T> T toTypedList( EthosResponse ethosResponse, Class cls ) throws JsonProcessingException {
+        List objList = new ArrayList();
+        if( ethosResponse == null || cls == null ) {
+            return (T) objList;
+        }
+        JavaType javaType = objectMapper.getTypeFactory().constructCollectionType( List.class, cls );
+        objList = objectMapper.readValue( ethosResponse.getContent(), javaType );
+        return (T) objList;
+    }
+
+    /**
+     * Converts the EthosResponse content into a generic typed object based on the given class.
+     * @param ethosResponse The EthosResponse containing content to convert.
+     * @param cls A class reference of the generic type object to convert to.
+     * @param <T> The generic type returned.
+     * @return A generic type object from the content of the EthosResponse, according to the given class.
+     * @throws JsonProcessingException Thrown if the object mapper cannot read the content of the EthosResponse.
+     */
+    public <T> T toTyped( EthosResponse ethosResponse, Class cls ) throws JsonProcessingException {
+        T genericType = null;
+        JavaType javaType = objectMapper.getTypeFactory().constructType( cls );
+        genericType = objectMapper.readValue( ethosResponse.getContent(), javaType );
+        return (T) genericType;
     }
 
 }
