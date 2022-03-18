@@ -1894,6 +1894,7 @@ public class EthosProxyClient<T> extends EthosClient {
      * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
      * @param offset The 0 based index from which to begin paging for the given resource.
      * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
      * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
      *         with the given page size according to the requested version of the resource,
      *         beginning at the given offset index and up to the number of pages specified or the max number of pages (whichever is less).
@@ -1902,7 +1903,7 @@ public class EthosProxyClient<T> extends EthosClient {
     public List<EthosResponse> getPagesFromOffset( String resourceName, String version, int pageSize, int offset, int numPages, Class classType ) throws IOException {
         List<EthosResponse> ethosResponseList = getPagesFromOffset( resourceName, version, pageSize, offset, numPages );
         if( classType != null ) {
-            ethosResponseList = convertResponsesContentToTypedList(ethosResponseList, classType);
+            ethosResponseList = convertResponsesContentToTypedList( ethosResponseList, classType );
         }
         return ethosResponseList;
     }
@@ -1915,6 +1916,7 @@ public class EthosProxyClient<T> extends EthosClient {
      * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
      * @param offset The 0 based index from which to begin paging for the given resource.
      * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
      * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
      *         with the response content body length as the page size according to the requested version of the resource,
      *         beginning at the given offset index and up to the number of pages specified or the max number of pages (whichever is less).
@@ -1931,6 +1933,7 @@ public class EthosProxyClient<T> extends EthosClient {
      * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
      * @param offset The 0 based index from which to begin paging for the given resource.
      * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
      * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
      *         with the given page size according to the default version of the resource,
      *         beginning at the given offset index and up to the number of pages specified or the max number of pages (whichever is less).
@@ -1947,6 +1950,7 @@ public class EthosProxyClient<T> extends EthosClient {
      * @param resourceName The name of the Ethos resource to get data for.
      * @param offset The 0 based index from which to begin paging for the given resource.
      * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
      * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
      *         with the response content body length as the page size according to the default version of the resource,
      *         beginning at the given offset index and up to the number of pages specified or the max number of pages (whichever is less).
@@ -2170,6 +2174,82 @@ public class EthosProxyClient<T> extends EthosClient {
         ethosResponseList = handlePaging( pager );
 
         return ethosResponseList;
+    }
+
+    /**
+     * Gets some number of rows for the given resource, version, and page size.  The number of rows is returned as a
+     * paged-based list of EthosResponses, altogether containing the number of rows.  If numRows is negative, all pages will be returned.
+     * The response body is returned within each EthosResponse from the returned list as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the requested version of the resource,
+     *         up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getRows( String resourceName, String version, int pageSize, int numRows, Class classType ) throws IOException {
+        List<EthosResponse> ethosResponseList = getRows( resourceName, version, pageSize, numRows );
+        if( classType != null ) {
+            ethosResponseList = convertResponsesContentToTypedList( ethosResponseList, classType );
+        }
+        return ethosResponseList;
+    }
+
+    /**
+     * Gets some number of rows for the given resource and page size.  The number of rows is returned as a
+     * paged-based list of EthosResponses, altogether containing the number of rows.  Uses the default version of the resource.
+     * The response body is returned within each EthosResponse from the returned list as a list of objects of the given class type.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the default version of the resource,
+     *         up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getRows( String resourceName, int pageSize, int numRows, Class classType ) throws IOException {
+        return getRows( resourceName, DEFAULT_VERSION, pageSize, numRows, classType );
+    }
+
+    /**
+     * Gets some number of rows for the given resource and version.  The number of rows is returned as a
+     * paged-based list of EthosResponses, altogether containing the number of rows.  Uses the default page size of the
+     * response body content length.
+     * The response body is returned within each EthosResponse from the returned list as a list of objects of the given class type.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the requested version of the resource,
+     *         up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getRows( String resourceName, String version, int numRows, Class classType ) throws IOException {
+        return getRows( resourceName, version, DEFAULT_PAGE_SIZE, numRows, classType );
+    }
+
+    /**
+     * Gets some number of rows for the given resource.  The number of rows is returned as a
+     * paged-based list of EthosResponses, altogether containing the number of rows.  Uses the default page size
+     * of the response body content length, and the default version of the resource.
+     * The response body is returned within each EthosResponse from the returned list as a list of objects of the given class type.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the default version of the resource,
+     *         up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getRows( String resourceName, int numRows, Class classType ) throws IOException {
+        return getRows( resourceName, DEFAULT_VERSION, numRows, classType );
     }
 
     /**
@@ -2407,6 +2487,86 @@ public class EthosProxyClient<T> extends EthosClient {
     }
 
     /**
+     * Gets some number of rows for the given resource, version, and page size, from the given offset.  The number of rows is returned in a list of
+     * pages altogether containing the number of rows.  If both the offset and numRows are negative, all pages will be returned.
+     * If the offset is negative, pages up to the numRows will be returned.  If numRows is negative, all pages from the offset will be returned.
+     * The response body is returned within each EthosResponse from the returned list as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the requested version of the resource,
+     *         beginning at the given offset index and up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getRowsFromOffset( String resourceName, String version, int pageSize, int offset, int numRows, Class classType ) throws IOException {
+        List<EthosResponse> ethosResponseList = getRowsFromOffset( resourceName, version, pageSize, offset, numRows );
+        if( classType != null ) {
+            ethosResponseList = convertResponsesContentToTypedList( ethosResponseList, classType );
+        }
+        return ethosResponseList;
+    }
+
+    /**
+     * Gets some number of rows for the given resource and version from the given offset.  The number of rows is returned in a list of
+     * pages altogether containing the number of rows.  Uses the default page size of the response body content length.
+     * The response body is returned within each EthosResponse from the returned list as a list of objects of the given class type.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the requested version of the resource,
+     *         beginning at the given offset index and up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getRowsFromOffset( String resourceName, String version, int offset, int numRows, Class classType ) throws IOException {
+        return getRowsFromOffset( resourceName, version, DEFAULT_PAGE_SIZE, offset, numRows, classType );
+    }
+
+    /**
+     * Gets some number of rows for the given resource from the given offset.  The number of rows is returned in a list of
+     * pages altogether containing the number of rows.  Uses the default page size of the response body content length
+     * and the default version of the resource.
+     * The response body is returned within each EthosResponse from the returned list as a list of objects of the given class type.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the default version of the resource,
+     *         beginning at the given offset index and up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getRowsFromOffset( String resourceName, int offset, int numRows, Class classType ) throws IOException {
+        return getRowsFromOffset( resourceName, DEFAULT_PAGE_SIZE, offset, numRows, classType );
+    }
+
+    /**
+     * Gets some number of rows for the given resource and page size from the given offset.  The number of rows is returned in a list of
+     * pages altogether containing the number of rows.  Uses the default version of the resource.
+     * The response body is returned within each EthosResponse from the returned list as a list of objects of the given class type.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the default version of the resource,
+     *         beginning at the given offset index and up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getRowsFromOffset( String resourceName, int pageSize, int offset, int numRows, Class classType ) throws IOException {
+        return getRowsFromOffset( resourceName, DEFAULT_VERSION, pageSize, offset, numRows, classType );
+    }
+
+    /**
      * Gets some number of rows for the given resource from the given offset.  The number of rows is returned as a
      * row-based list of Strings, the size of which is the number of rows requested.  Uses the default page size of the
      * response body content length during internal paging operations, and the default version of the resource.
@@ -2576,6 +2736,44 @@ public class EthosProxyClient<T> extends EthosClient {
         Map<String,String> headersMap = buildHeadersMap( version );
         String url = EthosIntegrationUrls.apis(getRegion(), resourceName, id);
         EthosResponse ethosResponse = get( url, headersMap );
+        return ethosResponse;
+    }
+
+    /**
+     * Gets a resource by ID (GUID) for the given resource name.  Uses the default version.
+     * The response body is returned within the EthosResponse as an object of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param id The unique ID (GUID) of the resource to get.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return The data for a given resource in an <code>EthosResponse</code> according to the default version of the resource.  The
+     *         <code>EthosResponse</code> contains the content body of the resource data as well as headers and the Http status code.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getById( String resourceName, String id, Class classType ) throws IOException {
+        return getById( resourceName, id, DEFAULT_VERSION, classType );
+    }
+
+    /**
+     * Gets a resource by ID (GUID) for the given resource name and version.
+     * The response body is returned within the EthosResponse as an object of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param id The unique ID (GUID) of the resource to get.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return The data for a given resource in an <code>EthosResponse</code> according to the requested version of the resource.
+     *         The <code>EthosResponse</code> contains the content body of the resource data as well as headers and
+     *         the Http status code.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getById( String resourceName, String id, String version, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getById( resourceName, id, version );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToType( ethosResponse, classType );
+        }
         return ethosResponse;
     }
 
@@ -3149,6 +3347,20 @@ public class EthosProxyClient<T> extends EthosClient {
     }
 
     /**
+     * Converts the response body content within the given EthosResponse to an object of the given class type.
+     * The response body is set within the returned EthosResponse.
+     * @param ethosResponse The EthosResponse to convert the response body for.
+     * @param classType The class to use when converting the response body into an object.
+     * @return The EthosResponse containing an object for the response body.
+     * @throws JsonProcessingException Propagated from the EthosResponseConverter if thrown.
+     */
+    protected EthosResponse convertResponseContentToType( EthosResponse ethosResponse, Class classType ) throws JsonProcessingException {
+        Object responseBody = ethosResponseConverter.toTyped( ethosResponse, classType );
+        ethosResponse.setContentAsType( responseBody );
+        return ethosResponse;
+    }
+
+    /**
      * Converts the response body content within the given EthosResponse to a list of objects of the given class type.
      * The response body list is set within the returned EthosResponse.
      * @param ethosResponse The EthosResponse to convert the response body for.
@@ -3156,7 +3368,7 @@ public class EthosProxyClient<T> extends EthosClient {
      * @return The EthosResponse containing a list of objects for the response body.
      * @throws JsonProcessingException Propagated from the EthosResponseConverter if thrown.
      */
-    private EthosResponse convertResponseContentToTypedList( EthosResponse ethosResponse, Class classType ) throws JsonProcessingException {
+    protected EthosResponse convertResponseContentToTypedList( EthosResponse ethosResponse, Class classType ) throws JsonProcessingException {
         Object responseBody = ethosResponseConverter.toTypedList( ethosResponse, classType );
         ethosResponse.setContentAsType( responseBody );
         return ethosResponse;
@@ -3170,7 +3382,7 @@ public class EthosProxyClient<T> extends EthosClient {
      * @return The EthosResponse containing a list of objects for the response body.
      * @throws JsonProcessingException Propagated from the EthosResponseConverter if thrown.
      */
-    private List<EthosResponse> convertResponsesContentToTypedList( List<EthosResponse> ethosResponseList, Class classType ) throws JsonProcessingException {
+    protected List<EthosResponse> convertResponsesContentToTypedList( List<EthosResponse> ethosResponseList, Class classType ) throws JsonProcessingException {
         if( ethosResponseList == null || ethosResponseList.isEmpty() ) {
             return ethosResponseList;
         }

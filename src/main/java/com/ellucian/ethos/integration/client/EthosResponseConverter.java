@@ -430,9 +430,8 @@ public class EthosResponseConverter extends EthosResponseBuilder {
      * @throws JsonProcessingException Thrown if the object mapper cannot read the content of the EthosResponse.
      */
     public <T> T toTyped( EthosResponse ethosResponse, Class cls ) throws JsonProcessingException {
-        T genericType = null;
         JavaType javaType = objectMapper.getTypeFactory().constructType( cls );
-        genericType = objectMapper.readValue( ethosResponse.getContent(), javaType );
+        T genericType = objectMapper.readValue( ethosResponse.getContent(), javaType );
         return (T) genericType;
     }
 
