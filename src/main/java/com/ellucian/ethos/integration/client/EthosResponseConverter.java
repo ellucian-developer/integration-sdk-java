@@ -36,7 +36,11 @@ public class EthosResponseConverter extends EthosResponseBuilder {
     // ==========================================================================
 
     /** The date format to use when handling date fields. */
-    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+//    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+//    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'TZD'";
+//    private final String DATE_FORMAT = "dd/MM/yyyy'T'HH:mm:ss.SSS";
+//    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+//    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
     /**
      * A Jackson objectMapper to count the number of rows in the response body content,
@@ -49,9 +53,9 @@ public class EthosResponseConverter extends EthosResponseBuilder {
      */
     public EthosResponseConverter() {
         super();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( DATE_FORMAT );
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( DATE_FORMAT );
         this.objectMapper = new ObjectMapper();
-        this.objectMapper.setDateFormat( simpleDateFormat );
+//        this.objectMapper.setDateFormat( simpleDateFormat );
     }
 
     // ==========================================================================
