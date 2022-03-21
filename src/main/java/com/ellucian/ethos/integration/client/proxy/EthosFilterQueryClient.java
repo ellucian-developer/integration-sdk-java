@@ -1,6 +1,6 @@
 /*
  * ******************************************************************************
- *   Copyright 2021 Ellucian Company L.P. and its affiliates.
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
  * ******************************************************************************
  */
 package com.ellucian.ethos.integration.client.proxy;
@@ -86,6 +86,43 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
+     * Gets a page of data for the given resource with the given filter.  Uses the default version of the resource.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaFilterStr The string resource filter in JSON format contained in the URL, e.g: <pre>?criteria={"names":[{"firstName":"John"}]}</pre>
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException Thrown if the given resoureName or criteriaFilterStr is null or blank.
+     */
+    public EthosResponse getWithCriteriaFilter( String resourceName, String criteriaFilterStr, Class classType ) throws IOException {
+        return getWithCriteriaFilter( resourceName, DEFAULT_VERSION, criteriaFilterStr, classType );
+    }
+
+    /**
+     * Gets a page of data for the given resource by name and version with the given filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaFilterStr The string resource filter in JSON format contained in the URL, e.g: <pre>?criteria={"names":[{"firstName":"John"}]}</pre>
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException If the given resourceName is null or blank, or if the given criteriaFilterStr is null or blank.
+     */
+    public EthosResponse getWithCriteriaFilter( String resourceName, String version, String criteriaFilterStr, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithCriteriaFilter( resourceName, version, criteriaFilterStr );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
      * Gets a page of data for the given resource with the given named query filter.  Uses the default version of the resource.
      * @param resourceName The name of the resource to get data for.
      * @param namedQueryFilterStr The string resource filter in JSON format contained in the URL, e.g: <pre>?criteria={"names":[{"firstName":"John"}]}</pre>
@@ -121,6 +158,42 @@ public class EthosFilterQueryClient extends EthosProxyClient {
         return response;
     }
 
+    /**
+     * Gets a page of data for the given resource by name and version with the given named query filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param namedQueryFilterStr The string resource filter in JSON format contained in the URL, e.g: <pre>?instructor={"instructor": {"id": "11111111-1111-1111-1111-111111111111"}}"</pre>
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException If the given resourceName is null or blank, or if the given namedQueryFilterStr is null or blank.
+     */
+    public EthosResponse getWithNamedQueryFilter( String resourceName, String version, String namedQueryFilterStr, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithNamedQueryFilter( resourceName, version, namedQueryFilterStr );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
+     * Gets a page of data for the given resource with the given named query filter.  Uses the default version of the resource.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param namedQueryFilterStr The string resource filter in JSON format contained in the URL, e.g: <pre>?criteria={"names":[{"firstName":"John"}]}</pre>
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException Thrown if the resourceName or namedQueryFilterStr is null or blank.
+     */
+    public EthosResponse getWithNamedQueryFilter( String resourceName, String namedQueryFilterStr, Class classType ) throws IOException {
+        return getWithNamedQueryFilter( resourceName, DEFAULT_VERSION, namedQueryFilterStr, classType );
+    }
 
     /**
      * Gets a page of data for the given resource by name with the given filter.  Uses the default version of the resource.
@@ -157,6 +230,47 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
+     * Gets a page of data for the given resource by name and version with the given filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException If the given criteriaFilter is null.
+     */
+    public EthosResponse getWithCriteriaFilter(String resourceName, String version, CriteriaFilter criteriaFilter, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithCriteriaFilter( resourceName, version, criteriaFilter );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
+     * Gets a page of data for the given resource by name with the given filter.  Uses the default version of the resource.
+     * Makes a non-filter API request if the given criteriaFilter is null.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithCriteriaFilter(String resourceName, CriteriaFilter criteriaFilter, Class classType ) throws IOException {
+        return getWithCriteriaFilter( resourceName, DEFAULT_VERSION, criteriaFilter, classType );
+    }
+
+    /**
      * Gets a page of data for the given resource by name with the given named query filter.  Uses the default version of the resource.
      * Makes a non-filter API request if the given namedQueryFilter is null.
      * @param resourceName The name of the resource to get data for.
@@ -188,6 +302,47 @@ public class EthosFilterQueryClient extends EthosProxyClient {
             throw new IllegalArgumentException( String.format("Error: Cannot get resource \"%s\" with named query filter due to a null named query filter reference.", resourceName) );
         }
         return getWithNamedQueryFilter( resourceName, version, namedQueryFilter.toString() );
+    }
+
+    /**
+     * Gets a page of data for the given resource by name and version with the given named query filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                         A simple call to namedQueryFilter.toString() should output the named query filter portion of the request URL,
+     *                         e.g: <code>?instructor={"instructor": {"id": "11111111-1111-1111-1111-111111111111"}}"</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException If the given namedQueryFilter is null.
+     */
+    public EthosResponse getWithNamedQueryFilter(String resourceName, String version, NamedQueryFilter namedQueryFilter, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithNamedQueryFilter( resourceName, version, namedQueryFilter );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
+     * Gets a page of data for the given resource by name with the given named query filter.  Uses the default version of the resource.
+     * Makes a non-filter API request if the given namedQueryFilter is null.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                       A simple call to namedQueryFilter.toString() should output the named query filter portion of the request URL,
+     *                       e.g: <code>?instructor={"instructor": {"id": "11111111-1111-1111-1111-111111111111"}}"</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithNamedQueryFilter(String resourceName, NamedQueryFilter namedQueryFilter, Class classType ) throws IOException {
+        return getWithNamedQueryFilter( resourceName, DEFAULT_VERSION, namedQueryFilter, classType );
     }
 
     /**
@@ -236,6 +391,57 @@ public class EthosFilterQueryClient extends EthosProxyClient {
                                         .withSimpleCriteria(criteriaKey, criteriaValue)
                                         .buildCriteriaFilter();
         return getWithCriteriaFilter( resourceName, version, criteriaFilter );
+    }
+
+    /**
+     * Convenience method to submit a GET request with a single set of criteria filter for a SimpleCriteria.  This is intended only to be used
+     * for a single set of criteria filter, e.g: <code>?criteria={"lastName":"Smith"}</code>, where <b>firstName</b> is the criteriaKey,
+     * and <b>John</b> is the criteriaValue.  Requests requiring a more complex criteria filter should first build the CriteriaFilter
+     * with the necessary criteria, and then call <code>getWithCriteriaFilter(resourceName, version, criteriaFilter)</code>.
+     * <p>
+     * The parameters criteriaKey and criteriaValue should only specify the values within quotes of the
+     * JSON filter syntax.  No JSON syntax (square or squirly brackets, etc) should be contained within those parameter values.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaKey The JSON label key for the criteria.
+     * @param criteriaValue The value associated with the criteriaKey.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @return An EthosResponse containing a page of data for the given resource criteria filter GET request.
+     */
+    public EthosResponse getWithSimpleCriteriaValues(String resourceName, String version, String criteriaKey, String criteriaValue, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithSimpleCriteriaValues( resourceName, version, criteriaKey, criteriaValue );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
+     * Convenience method to submit a GET request with a single set of criteria filter for a SimpleCriteria.  This is intended only to be used
+     * for a single set of criteria filter, e.g: <code>?criteria={"lastName":"Smith"}</code>, where <b>firstName</b> is the criteriaKey,
+     * and <b>John</b> is the criteriaValue.  Requests requiring a more complex criteria filter should first build the CriteriaFilter
+     * with the necessary criteria, and then call <code>getWithCriteriaFilter(resourceName, version, criteriaFilter)</code>.
+     * <p>
+     * The parameters criteriaKey and criteriaValue should only specify the values within quotes of the
+     * JSON filter syntax.  No JSON syntax (square or squirly brackets, etc) should be contained within those parameter values.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * <p>
+     * Uses the default version of the resource.
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaKey The JSON label key for the criteria.
+     * @param criteriaValue The value associated with the criteriaKey.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @return An EthosResponse containing a page of data for the given resource criteria filter GET request.
+     */
+    public EthosResponse getWithSimpleCriteriaValues(String resourceName, String criteriaKey, String criteriaValue, Class classType ) throws IOException {
+        return getWithSimpleCriteriaValues( resourceName, DEFAULT_VERSION, criteriaKey, criteriaValue, classType );
     }
 
     /**

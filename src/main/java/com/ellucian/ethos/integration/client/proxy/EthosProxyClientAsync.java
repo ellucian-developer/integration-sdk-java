@@ -1,3 +1,9 @@
+/*
+ * ******************************************************************************
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
+ * ******************************************************************************
+ */
+
 package com.ellucian.ethos.integration.client.proxy;
 
 import com.ellucian.ethos.integration.client.EthosClient;
