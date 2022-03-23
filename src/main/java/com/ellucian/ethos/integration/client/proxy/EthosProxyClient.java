@@ -24,15 +24,18 @@ import java.util.Map;
  * <p>
  * Supports (but not limited to) the following functionality:
  * <ul>
- *     <li>Getting data for a given Ethos resource</li>
+ *     <li>Getting data for a given Ethos/BPAPI resource</li>
  *     <li>Getting an Ethos resource by ID (GUID)</li>
  *     <li>Getting the page size and/or total count for a resource</li>
+ *     <li>Paging support when multiple resources are retrieved</li>
+ *     <li>Making POST/PUT requests for adding or updating data through Ethos Integration.</li>
  * </ul>
  *
  * <p>
  * Supports paging for data in the following formats:
  * <ul>
- *     <li><code>List&lt;EthosResponse&gt;</code> a list of EthosResponse objects</li>
+ *     <li><code>List&lt;EthosResponse&gt;</code> a list of EthosResponse objects containing response bodies as JSON formatted strings</li>
+ *     <li><code>List&lt;EthosResponse&gt;</code> a list of EthosResponse objects containing response bodies as generic type objects (POJOs/Java Beans)</li>
  *     <li><code>List&lt;String&gt;</code> a list of Strings</li>
  *     <li><code>List&lt;JsonNode&gt;</code> a list of Jackson JsonNode objects</li>
  * </ul>

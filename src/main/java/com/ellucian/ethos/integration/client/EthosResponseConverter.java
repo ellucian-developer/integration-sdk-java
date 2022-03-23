@@ -406,17 +406,17 @@ public class EthosResponseConverter extends EthosResponseBuilder {
     /**
      * Converts the EthosResponse content into a list of generic typed objects based on the given class.
      * @param ethosResponse The EthosResponse containing content to convert.
-     * @param cls A class reference of the generic type object to convert to.
+     * @param classType A class reference of the generic type object to convert to.
      * @param <T> The generic type returned.
      * @return A list of generic type objects from the content of the EthosResponse, according to the given class.
      * @throws JsonProcessingException Thrown if the object mapper cannot read the content of the EthosResponse.
      */
-    public <T> T toTypedList( EthosResponse ethosResponse, Class cls ) throws JsonProcessingException {
+    public <T> T toTypedList( EthosResponse ethosResponse, Class classType ) throws JsonProcessingException {
         List objList = new ArrayList();
-        if( ethosResponse == null || cls == null ) {
+        if( ethosResponse == null || classType == null ) {
             return (T) objList;
         }
-        JavaType javaType = objectMapper.getTypeFactory().constructCollectionType( List.class, cls );
+        JavaType javaType = objectMapper.getTypeFactory().constructCollectionType( List.class, classType );
         objList = objectMapper.readValue( ethosResponse.getContent(), javaType );
         return (T) objList;
     }
@@ -424,13 +424,13 @@ public class EthosResponseConverter extends EthosResponseBuilder {
     /**
      * Converts the EthosResponse content into a generic typed object based on the given class.
      * @param ethosResponse The EthosResponse containing content to convert.
-     * @param cls A class reference of the generic type object to convert to.
+     * @param classType A class reference of the generic type object to convert to.
      * @param <T> The generic type returned.
      * @return A generic type object from the content of the EthosResponse, according to the given class.
      * @throws JsonProcessingException Thrown if the object mapper cannot read the content of the EthosResponse.
      */
-    public <T> T toTyped( EthosResponse ethosResponse, Class cls ) throws JsonProcessingException {
-        JavaType javaType = objectMapper.getTypeFactory().constructType( cls );
+    public <T> T toTyped( EthosResponse ethosResponse, Class classType ) throws JsonProcessingException {
+        JavaType javaType = objectMapper.getTypeFactory().constructType( classType );
         T genericType = objectMapper.readValue( ethosResponse.getContent(), javaType );
         return (T) genericType;
     }
