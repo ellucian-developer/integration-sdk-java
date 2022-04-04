@@ -18,6 +18,7 @@ public class Resource {
      * Create an instance of a Resource.
      * @param id the ID of the resource
      * @param name the name of the resource
+     * @param version the version of the resource
      */
     @JsonCreator
     public Resource(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("version") String version){
