@@ -69,11 +69,11 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.12</version>
         </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-core</artifactId>
-            <version>1.1.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.amazonaws</groupId>-->
+<!--            <artifactId>aws-lambda-java-core</artifactId>-->
+<!--            <version>1.1.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -104,6 +104,35 @@
             <id>release</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>bpapi/**</exclude>
+                                <exclude>eedm/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <sourcepath>src/main/java</sourcepath>
+                            <show>private</show>
+                            <excludePackageNames>com.ellucian.ethos.integration.sample.*</excludePackageNames>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-shade-plugin</artifactId>
@@ -163,29 +192,17 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
                         <version>2.2.1</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>eedm/**</exclude>
+                                <exclude>bpapi/**</exclude>
+                            </excludes>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
                                 <goals>
                                     <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <configuration>
-                            <sourcepath>src/main/java</sourcepath>
-                            <show>private</show>
-                            <excludePackageNames>com.ellucian.ethos.integration.sample.*</excludePackageNames>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -241,6 +258,30 @@
                                         </transformer>
                                     </transformers>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jsonschema2pojo</groupId>
+                        <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                        <version>1.1.1</version>
+                        <configuration>
+                            <!--<sourceDirectory>${basedir}/src/main/resources/schemas/eedm</sourceDirectory>-->
+                            <!--<targetPackage>com.ellucian.generated.eedm.ban</targetPackage>-->
+                            <sourceDirectory>src/main/resources</sourceDirectory>
+                            <excludes>*.properties</excludes>
+                            <targetPackage>com.ellucian.generated</targetPackage>
+                            <generateBuilders>true</generateBuilders>
+                            <formatDates>false</formatDates>
+                            <formatDateTimes>false</formatDateTimes>
+                            <!--<dateType>java.lang.String</dateType>
+                            <dateTimeType>java.lang.String</dateTimeType>-->
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
