@@ -8,6 +8,7 @@ package com.ellucian.ethos.integration.sample.commandline;
 
 import com.ellucian.ethos.integration.client.EthosClientBuilder;
 import com.ellucian.ethos.integration.client.EthosResponse;
+import com.ellucian.ethos.integration.client.EthosResponseConverter;
 import com.ellucian.ethos.integration.client.proxy.EthosProxyClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -745,36 +746,39 @@ public class EthosProxyClientExample {
 
     public void doCRUDExample() {
         EthosProxyClient ethosProxyClient = getEthosProxyClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         System.out.println("******* doCRUDExample() *******");
 
         try {
             // get a single person record
             List<EthosResponse> responses = ethosProxyClient.getRows("persons", 1);
-            JsonNode person = responses.get(0).getContentAsJson();
-            String personId = person.elements().next().get("id").asText();
+//            JsonNode person = responses.get(0).getContentAsJson();
+            JsonNode personNode = ethosResponseConverter.toJsonNode( responses.get(0) );
+            String personId = personNode.elements().next().get("id").asText();
 
             // build a person-holds resource
             Instant rightNow = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-            ObjectNode personHold = JsonNodeFactory.instance.objectNode();
-            personHold.put("id", "00000000-0000-0000-0000-000000000000");
-            personHold.put("startOn", rightNow.toString());
+            ObjectNode personHoldNode = JsonNodeFactory.instance.objectNode();
+            personHoldNode.put("id", "00000000-0000-0000-0000-000000000000");
+            personHoldNode.put("startOn", rightNow.toString());
             // add a person object with 'id'
-            personHold.putObject("person").put("id", personId);
+            personHoldNode.putObject("person").put("id", personId);
             // add a type object with 'category'
-            personHold.putObject("type").put("category", "financial");
+            personHoldNode.putObject("type").put("category", "financial");
 
             // send a POST request to create a new person-holds record
-            EthosResponse response = ethosProxyClient.post("person-holds", personHold);
+            EthosResponse response = ethosProxyClient.post("person-holds", personHoldNode);
             System.out.println("Created a 'person-holds' record:");
             System.out.println(response.getContent());
 
             // get the 'id' of the new record
-            String newId = response.getContentAsJson().get("id").asText();
+//            String newId = response.getContentAsJson().get("id").asText();
+            String newId = ethosResponseConverter.toJsonNode(response).get("id").asText();
 
             // change the date on the person-holds record and send a PUT request to update the record
-            personHold.remove("id");
-            personHold.put("startOn", rightNow.plus(1, ChronoUnit.DAYS).toString());
-            response = ethosProxyClient.put("person-holds", newId, personHold);
+            personHoldNode.remove("id");
+            personHoldNode.put("startOn", rightNow.plus(1, ChronoUnit.DAYS).toString());
+            response = ethosProxyClient.put("person-holds", newId, personHoldNode);
             System.out.println(String.format("Successfully updated person-holds record %s.", newId));
 
             // delete the record

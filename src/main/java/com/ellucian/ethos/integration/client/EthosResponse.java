@@ -6,11 +6,8 @@
 package com.ellucian.ethos.integration.client;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.JsonLoader;
 import org.apache.http.Header;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -107,15 +104,6 @@ public class EthosResponse<T> {
      */
     public String getContent() {
         return this.content;
-    }
-
-    /**
-     * Gets the response body as a <code>com.fasterxml.jackson.databind.JsonNode</code>.
-     * @return The response body as a JsonNode
-     * @throws IOException Thrown if the string could not be read into a JsonNode.
-     */
-    public JsonNode getContentAsJson() throws IOException {
-        return JsonLoader.fromString( this.content );
     }
 
     /**

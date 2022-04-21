@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.github.fge.jackson.JsonLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
@@ -30,6 +29,8 @@ public class UtiltityTest {
     // Attributes
     // ==========================================================================
     private final static Log log = LogFactory.getLog(UtiltityTest.class);
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     // ==========================================================================
     // Methods
@@ -61,7 +62,7 @@ public class UtiltityTest {
                                 "\"jsonPath\": \"/\"," +
                                 "\"jsonProperty\": \"webIndicator\"" +
                            "} ]";
-        JsonNode jsonNode = JsonLoader.fromString( jsonStr );
+        JsonNode jsonNode = objectMapper.readTree( jsonStr );
 //        ObjectMapper objectMapper = new ObjectMapper();
 //        JsonNode jsonNode = objectMapper.readTree( jsonStr );
         System.out.println( ">>> JSON NODE SIZE: " + jsonNode.size() );
@@ -89,7 +90,7 @@ public class UtiltityTest {
                                   "\"coldBreakfast\": \"cheerios\"" +
                               "}" +
                          "}";
-        JsonNode node = JsonLoader.fromString( jsonStr );
+        JsonNode node = objectMapper.readTree( jsonStr );
 //        ObjectNode objectNode = JsonNodeFactory.withExactBigDecimals(false).objectNode();
 //        objectNode.put("id", "appId");
 //        ArrayNode arrayNode = objectNode.putArray( "resource" );
@@ -138,7 +139,7 @@ public class UtiltityTest {
                 "            \"applicationId\": \"1d6bd816-7018-49ff-8eea-af696688472e\"" +
                 "        }" +
                 "    ]}";
-        JsonNode jsonNode = JsonLoader.fromString( ownerOverridesStr );
+        JsonNode jsonNode = objectMapper.readTree( ownerOverridesStr );
         JsonNode ownerOverridesNode = jsonNode.at("/ownerOverrides");
         Iterator<JsonNode> jsonNodeIterator = ownerOverridesNode.iterator();
         while( jsonNodeIterator.hasNext() ) {

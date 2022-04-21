@@ -13,7 +13,6 @@ import com.ellucian.ethos.integration.client.errors.ErrorFactory;
 import com.ellucian.ethos.integration.client.errors.EthosError;
 import com.ellucian.ethos.integration.client.errors.EthosErrorsClient;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.JsonLoader;
 import org.apache.http.Header;
 
 import java.io.IOException;
@@ -97,13 +96,14 @@ public class EthosErrorsClientExample {
     public void getErrors() {
         System.out.println( "******* ethosErrorClient.get() *******" );
         EthosErrorsClient ethosErrorsClient = getEthosErrorsClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             EthosResponse ethosResponse = ethosErrorsClient.get();
             Header totalCountHeader = ethosResponse.getHeader( EthosErrorsClient.HDR_TOTAL_COUNT );
             Header remainingCountHeader = ethosResponse.getHeader( EthosErrorsClient.HDR_REMAINING_COUNT );
             System.out.println( String.format("TOTAL ERROR COUNT: %s", totalCountHeader.getValue()) );
             System.out.println( String.format("REMAINING ERROR COUNT: %s", remainingCountHeader.getValue()) );
-            JsonNode errorsNode = JsonLoader.fromString( ethosResponse.getContent() );
+            JsonNode errorsNode = ethosResponseConverter.toJsonNode( ethosResponse );
             Iterator<JsonNode> errorsIter = errorsNode.iterator();
             while( errorsIter.hasNext() ) {
                 JsonNode errNode = errorsIter.next();

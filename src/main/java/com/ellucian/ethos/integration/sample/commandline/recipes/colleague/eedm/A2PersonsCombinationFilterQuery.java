@@ -8,6 +8,7 @@ package com.ellucian.ethos.integration.sample.commandline.recipes.colleague.eedm
 
 import com.ellucian.ethos.integration.client.EthosClientBuilder;
 import com.ellucian.ethos.integration.client.EthosResponse;
+import com.ellucian.ethos.integration.client.EthosResponseConverter;
 import com.ellucian.ethos.integration.client.proxy.EthosFilterQueryClient;
 import com.ellucian.ethos.integration.client.proxy.filter.CriteriaFilter;
 import com.ellucian.ethos.integration.client.proxy.filter.SimpleCriteria;
@@ -35,7 +36,8 @@ public class A2PersonsCombinationFilterQuery {
         // The EthosClientBuilder is built as follows in the calling class using this service, and is used to build an EthosFilterQueryClient.
         // new EthosClientBuilder(apiKey).buildEthosProxyClient();
         EthosFilterQueryClient ethosFilterQueryClient = ethosClientBuilder.buildEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         EthosResponse ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter( "persons", cf );
-        return ethosResponse.getContentAsJson();
+        return ethosResponseConverter.toJsonNode( ethosResponse );
     }
 }

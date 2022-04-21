@@ -8,6 +8,7 @@ package com.ellucian.ethos.integration.sample.commandline;
 
 import com.ellucian.ethos.integration.client.EthosClientBuilder;
 import com.ellucian.ethos.integration.client.EthosResponse;
+import com.ellucian.ethos.integration.client.EthosResponseConverter;
 import com.ellucian.ethos.integration.client.proxy.EthosFilterQueryClient;
 import com.ellucian.ethos.integration.client.proxy.filter.CriteriaFilter;
 import com.ellucian.ethos.integration.client.proxy.filter.FilterMap;
@@ -38,19 +39,17 @@ public class EthosFilterQueryClientExample {
         }
         String apiKey = args[ 0 ];
         EthosFilterQueryClientExample ethosFilterQueryClientExample = new EthosFilterQueryClientExample( apiKey );
-        ethosFilterQueryClientExample.getUsingCriteriaFilterString();
-        ethosFilterQueryClientExample.getUsingCriteriaFilter();
-        ethosFilterQueryClientExample.getUsingNamedQueryFilter();
-        ethosFilterQueryClientExample.getWithSimpleCriteriaArrayFilter();
-        ethosFilterQueryClientExample.getUsingFilterMap();
-        ethosFilterQueryClientExample.getPagesUsingCriteriaFilter();
-        ethosFilterQueryClientExample.getPagesFromOffsetUsingCriteriaFilter();
-        ethosFilterQueryClientExample.getPagesUsingNamedQueryFilter();
-        ethosFilterQueryClientExample.getPagesUsingFilterMapValues();
-        ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValues();
-
-        // The following example is commented out per the comments in that method.
-//         ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilter();
+//        ethosFilterQueryClientExample.getUsingCriteriaFilterString();
+//        ethosFilterQueryClientExample.getUsingCriteriaFilter();
+//        ethosFilterQueryClientExample.getUsingNamedQueryFilter();
+//        ethosFilterQueryClientExample.getWithSimpleCriteriaArrayFilter();
+//        ethosFilterQueryClientExample.getUsingFilterMap();
+//        ethosFilterQueryClientExample.getPagesUsingCriteriaFilter();
+//        ethosFilterQueryClientExample.getPagesFromOffsetUsingCriteriaFilter();
+//        ethosFilterQueryClientExample.getPagesUsingNamedQueryFilter();
+//        ethosFilterQueryClientExample.getPagesUsingFilterMapValues();
+//        ethosFilterQueryClientExample.getPagesFromOffsetUsingFilterMapValues();
+        ethosFilterQueryClientExample.getAccountCodesWithCriteriaFilter();
     }
 
     public EthosFilterQueryClient getEthosFilterQueryClient() {
@@ -67,11 +66,12 @@ public class EthosFilterQueryClientExample {
         String version = "application/vnd.hedtech.integration.v12.1.0+json";
         String criteriaFilterStr = "?criteria={\"names\":[{\"firstName\":\"John\",\"lastName\":\"Smith\"}]}";
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter(resource, version, criteriaFilterStr);
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
-            System.out.println( ethosResponse.getContentAsJson().toPrettyString() );
+            System.out.println( "Number of resources returned: " + ethosResponseConverter.toJsonNode(ethosResponse).size() );
+            System.out.println( ethosResponseConverter.toJsonNode(ethosResponse).toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -85,11 +85,12 @@ public class EthosFilterQueryClientExample {
         String criteriaKey = "firstName";
         String criteriaValue = "John";
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithSimpleCriteriaArrayValues( resource, criteriaLabel, criteriaKey, criteriaValue );
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
-            System.out.println( ethosResponse.getContentAsJson().toPrettyString() );
+            System.out.println( "Number of resources returned: " + ethosResponseConverter.toJsonNode(ethosResponse).size() );
+            System.out.println( ethosResponseConverter.toJsonNode(ethosResponse).toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -104,11 +105,12 @@ public class EthosFilterQueryClientExample {
                                         .withSimpleCriteriaArray("names", "firstName", "John")
                                         .buildCriteriaFilter();
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter( resource, criteriaFilter );
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
-            System.out.println( ethosResponse.getContentAsJson().toPrettyString() );
+            System.out.println( "Number of resources returned: " + ethosResponseConverter.toJsonNode(ethosResponse).size() );
+            System.out.println( ethosResponseConverter.toJsonNode(ethosResponse).toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -125,11 +127,12 @@ public class EthosFilterQueryClientExample {
                                             .withNamedQuery( queryName, queryKey, queryValue)
                                             .buildNamedQueryFilter();
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithNamedQueryFilter( resource, namedQueryFilter );
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
-            System.out.println( ethosResponse.getContentAsJson().toPrettyString() );
+            System.out.println( "Number of resources returned: " + ethosResponseConverter.toJsonNode(ethosResponse).size() );
+            System.out.println( ethosResponseConverter.toJsonNode(ethosResponse).toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -143,6 +146,7 @@ public class EthosFilterQueryClientExample {
         String filterKey = "firstName";
         String filterValue = "John";
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             FilterMap filterMap = new FilterMap.Builder()
                                       .withParameterPair(filterKey, filterValue)
@@ -150,8 +154,8 @@ public class EthosFilterQueryClientExample {
                                       .build();
             EthosResponse ethosResponse = ethosFilterQueryClient.getWithFilterMap( resource, version, filterMap );
             System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-            System.out.println( "Number of resources returned: " + ethosResponse.getContentAsJson().size() );
-            System.out.println( ethosResponse.getContentAsJson().toPrettyString() );
+            System.out.println( "Number of resources returned: " + ethosResponseConverter.toJsonNode(ethosResponse).size() );
+            System.out.println( ethosResponseConverter.toJsonNode(ethosResponse).toPrettyString() );
         }
         catch( IOException ioe ) {
             ioe.printStackTrace();
@@ -166,6 +170,7 @@ public class EthosFilterQueryClientExample {
         String criteriaValue = "John";
         int pageSize = 50;
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             CriteriaFilter criteriaFilter = new SimpleCriteria.Builder()
                                             .withSimpleCriteriaArray(criteriaLabel, criteriaKey, criteriaValue)
@@ -174,7 +179,7 @@ public class EthosFilterQueryClientExample {
             System.out.println( "Number of pages returned: " + ethosResponseList.size() );
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-                System.out.println( "PAGE SIZE: " + ethosResponse.getContentAsJson().size() );
+                System.out.println( "PAGE SIZE: " + ethosResponseConverter.toJsonNode(ethosResponse).size() );
             }
         }
         catch( IOException ioe ) {
@@ -190,6 +195,7 @@ public class EthosFilterQueryClientExample {
         String criteriaValue = "John";
         int pageSize = 50;
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             CriteriaFilter criteriaFilter = new SimpleCriteria.Builder()
                                             .withSimpleCriteriaArray(criteriaLabel, criteriaKey, criteriaValue)
@@ -205,7 +211,7 @@ public class EthosFilterQueryClientExample {
             System.out.println( "OFFSET: " + offset );
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-                System.out.println( "PAGE SIZE: " + ethosResponse.getContentAsJson().size() );
+                System.out.println( "PAGE SIZE: " + ethosResponseConverter.toJsonNode(ethosResponse).size() );
             }
         }
         catch( IOException ioe ) {
@@ -221,6 +227,7 @@ public class EthosFilterQueryClientExample {
         String queryValue = "Culture";
         int pageSize = 50;
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             NamedQueryFilter namedQueryFilter = new SimpleCriteria.Builder()
                                                 .withNamedQuery( queryName, queryKey, queryValue)
@@ -236,7 +243,7 @@ public class EthosFilterQueryClientExample {
             System.out.println( "OFFSET: " + offset );
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-                System.out.println( "PAGE SIZE: " + ethosResponse.getContentAsJson().size() );
+                System.out.println( "PAGE SIZE: " + ethosResponseConverter.toJsonNode(ethosResponse).size() );
             }
         }
         catch( IOException ioe ) {
@@ -252,6 +259,7 @@ public class EthosFilterQueryClientExample {
         String filterMapValue = "John";
         int pageSize = 50;
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             FilterMap filterMap = new FilterMap.Builder()
                                       .withParameterPair(filterMapKey, filterMapValue)
@@ -260,7 +268,7 @@ public class EthosFilterQueryClientExample {
             System.out.println( "Number of pages returned: " + ethosResponseList.size() );
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-                System.out.println( "PAGE SIZE: " + ethosResponse.getContentAsJson().size() );
+                System.out.println( "PAGE SIZE: " + ethosResponseConverter.toJsonNode(ethosResponse).size() );
             }
         }
         catch( IOException ioe ) {
@@ -277,6 +285,7 @@ public class EthosFilterQueryClientExample {
         String filterMapValue = "John";
         int pageSize = 50;
         EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        EthosResponseConverter ethosResponseConverter = new EthosResponseConverter();
         try {
             FilterMap filterMap = new FilterMap.Builder()
                     .withParameterPair(filterMapKey, filterMapValue)
@@ -292,7 +301,7 @@ public class EthosFilterQueryClientExample {
             System.out.println( "OFFSET: " + offset );
             for( EthosResponse ethosResponse : ethosResponseList ) {
                 System.out.println( "REQUESTED URL: " + ethosResponse.getRequestedUrl() );
-                System.out.println( "PAGE SIZE: " + ethosResponse.getContentAsJson().size() );
+                System.out.println( "PAGE SIZE: " + ethosResponseConverter.toJsonNode(ethosResponse).size() );
             }
         }
         catch( IOException ioe ) {
@@ -301,27 +310,27 @@ public class EthosFilterQueryClientExample {
     }
 
     /**
-     * Commenting this out because this is an example of using a criteria filter request with multiple criteria in
-     * a MultiCriteriaObject.  This criteria filter structure is only used with (Banner) business API requests,
-     * and not Ethos API requests.
+     * This is an example of using a criteria filter request with multiple criteria in
+     * a MultiCriteriaObject.  This criteria filter structure is used with (Banner) business API requests,
+     * and not typically with Ethos API requests.
      */
-//    public void getAccountCodesWithCriteriaFilter() {
-//        System.out.println( "******* getAccountCodesWithCriteriaFilter() *******" );
-//        String resourceName = "account-codes";
-//        String version = "application/json";
-//        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
-//        try {
-//            CriteriaFilter cf = new SimpleCriteria.Builder()
-//                                .withMultiCriteriaObject(null,"acctCode", "04", false)
-//                                .addSimpleCriteria("statusInd", "A")
-//                                .buildCriteriaFilter();
-//            EthosResponse ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter( resourceName, version, cf );
-//            System.out.println( "REQUEST URL: " + ethosResponse.getRequestedUrl() );
-//            System.out.println( "RESPONSE: " + ethosResponse.getContent());
-//        }
-//        catch( IOException ioe ) {
-//            ioe.printStackTrace();
-//        }
-//    }
+    public void getAccountCodesWithCriteriaFilter() {
+        System.out.println( "******* getAccountCodesWithCriteriaFilter() *******" );
+        String resourceName = "account-codes";
+        String version = "application/json";
+        EthosFilterQueryClient ethosFilterQueryClient = getEthosFilterQueryClient();
+        try {
+            CriteriaFilter cf = new SimpleCriteria.Builder()
+                                .withMultiCriteriaObject(null,"acctCode", "04", false)
+                                .addSimpleCriteria("statusInd", "A")
+                                .buildCriteriaFilter();
+            EthosResponse ethosResponse = ethosFilterQueryClient.getWithCriteriaFilter( resourceName, version, cf );
+            System.out.println( "REQUEST URL: " + ethosResponse.getRequestedUrl() );
+            System.out.println( "RESPONSE: " + ethosResponse.getContent());
+        }
+        catch( IOException ioe ) {
+            ioe.printStackTrace();
+        }
+    }
 
 }

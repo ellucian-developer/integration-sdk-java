@@ -1776,7 +1776,7 @@ public class EthosFilterQueryClient<T> extends EthosProxyClient {
             }
             // Set the pageSize from the response body length, if pageSize is <= DEFAULT_PAGE_SIZE.
             else if( pager.getEthosResponse().getContent() != null && pager.getEthosResponse().getContent().isBlank() == false ) {
-                int pageSize = pager.getEthosResponse().getContentAsJson().size();
+                int pageSize = ethosResponseConverter.toJsonNode(pager.getEthosResponse()).size();
                 pager.setPageSize( pageSize );
             }
             else {
