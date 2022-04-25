@@ -13,7 +13,7 @@
         Develop applications that integrate with Ellucian Ethos Integration using your own code and our Java libraries, without the need to call REST APIs.
         Please note that this package is still under development and will be subject to change in the coming months.
     </description>
-    <url>https://github.com/ellucianEthos</url>
+    <url>https://github.com/ellucian-developer</url>
 
     <licenses>
         <license>
@@ -29,12 +29,12 @@
             <organizationUrl>https://www.ellucian.com</organizationUrl>
         </developer>
     </developers>
-    <scm>
-        <connection>scm:git:git://github.com/ellucianEthos/integration-sdk-java.git</connection>
-        <developerConnection>scm:git:ssh://github.com:ellucianEthos/integration-sdk-java.git</developerConnection>
-        <url>http://github.com/ellucianEthos/integration-sdk-java/tree/master</url>
-        <tag>integration-sdk-java-0.0.1</tag>
-    </scm>
+<!--    <scm>-->
+<!--        <connection>scm:git:git://github.com/ellucianEthos/integration-sdk-java.git</connection>-->
+<!--        <developerConnection>scm:git:ssh://github.com:ellucianEthos/integration-sdk-java.git</developerConnection>-->
+<!--        <url>http://github.com/ellucianEthos/integration-sdk-java/tree/master</url>-->
+<!--        <tag>integration-sdk-java-0.0.1</tag>-->
+<!--    </scm>-->
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
