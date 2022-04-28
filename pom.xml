@@ -106,7 +106,6 @@
                         <configuration>
                             <sourcepath>src/main/java</sourcepath>
                             <show>private</show>
-<!--                            <excludePackageNames>com.ellucian.ethos.integration.sample.*</excludePackageNames>-->
                         </configuration>
                         <executions>
                             <execution>
@@ -127,16 +126,6 @@
                                 <goals>
                                     <goal>shade</goal>
                                 </goals>
-<!--                                <configuration>-->
-<!--                                    <transformers>-->
-<!--                                        <transformer-->
-<!--                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
-<!--                                            <mainClass>-->
-<!--                                                com.ellucian.ethos.integration.sample.commandline.GetAccessTokenExample-->
-<!--                                            </mainClass>-->
-<!--                                        </transformer>-->
-<!--                                    </transformers>-->
-<!--                                </configuration>-->
                             </execution>
                         </executions>
                     </plugin>
@@ -167,7 +156,6 @@
                                 </goals>
                                 <configuration>
                                     <dataFile>${project.build.directory}/jacoco.exec</dataFile>
-<!--                                    <excludes>${project.build.directory}/com/ellucian/ethos/integration/sample/commandline/*.class</excludes>-->
                                 </configuration>
                             </execution>
                         </executions>
@@ -232,16 +220,6 @@
                                 <goals>
                                     <goal>shade</goal>
                                 </goals>
-<!--                                <configuration>-->
-<!--                                    <transformers>-->
-<!--                                        <transformer-->
-<!--                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
-<!--                                            <mainClass>-->
-<!--                                                com.ellucian.ethos.integration.sample.commandline.GetAccessTokenExample-->
-<!--                                            </mainClass>-->
-<!--                                        </transformer>-->
-<!--                                    </transformers>-->
-<!--                                </configuration>-->
                             </execution>
                         </executions>
                     </plugin>
