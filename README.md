@@ -124,12 +124,8 @@ have defined JSON schemas.  They return `EthosError` and `ChangeNotification` ob
 The full SDK API JavaDoc is hosted on our Github Pages site, located at (https://ellucianethos.github.io/integrationSDKDoc/java).
 
 # Examples
-To view more examples, clone this repo and view the `com.ellucian.ethos.integration.sample.commandline` package.  Each of the 
-classes in that package has a static `main` method and can be run from the command line or with an IDE run command.  When 
-running these classes, an API key is required as a program argument.  
-
-For example:
-`java com.ellucian.ethos.integration.sample.commandline.EthosProxyClientExample "11111111-1111-1111-1111-111111111111"`
+The following are code-snippet examples of how to use the Ethos Integration SDK for Java.  For more in-depth examples 
+please refer to the [integration SDK Java example project](https://github.com/ellucian-developer/devexp-eijsdk-examples) in Github.
 
 ### Making Requests to the Proxy API
 
