@@ -121,7 +121,7 @@ have defined JSON schemas.  They return `EthosError` and `ChangeNotification` ob
 
 
 # Full API Documentation
-The full SDK API JavaDoc is hosted on our Github Pages site, located at (https://ellucianethos.github.io/integrationSDKDoc/java).
+The full SDK API JavaDoc is hosted on our [Github pages site](https://ellucian-developer.github.io/integrationSDKDoc/java/).
 
 # Examples
 The following are code-snippet examples of how to use the Ethos Integration SDK for Java.  For more in-depth examples 
