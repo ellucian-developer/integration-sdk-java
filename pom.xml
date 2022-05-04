@@ -223,30 +223,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.jsonschema2pojo</groupId>
-                        <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                        <version>1.1.1</version>
-                        <configuration>
-                            <!--<sourceDirectory>${basedir}/src/main/resources/schemas/eedm</sourceDirectory>-->
-                            <!--<targetPackage>com.ellucian.generated.eedm.ban</targetPackage>-->
-                            <sourceDirectory>src/main/resources</sourceDirectory>
-                            <excludes>*.properties</excludes>
-                            <targetPackage>com.ellucian.generated</targetPackage>
-                            <generateBuilders>true</generateBuilders>
-                            <formatDates>false</formatDates>
-                            <formatDateTimes>false</formatDateTimes>
-                            <!--<dateType>java.lang.String</dateType>
-                            <dateTimeType>java.lang.String</dateTimeType>-->
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
