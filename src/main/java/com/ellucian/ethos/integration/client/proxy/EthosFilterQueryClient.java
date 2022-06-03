@@ -10,6 +10,7 @@ import com.ellucian.ethos.integration.client.EthosClient;
 import com.ellucian.ethos.integration.client.EthosClientBuilder;
 import com.ellucian.ethos.integration.client.EthosResponse;
 import com.ellucian.ethos.integration.client.proxy.filter.*;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -772,6 +773,88 @@ public class EthosFilterQueryClient<T> extends EthosProxyClient {
      */
     public EthosResponse getWithFilterMap( String resourceName, String version, FilterMap filterMap, Class classType ) throws IOException {
         return getWithFilterMap( resourceName, version, filterMap.toString(), classType );
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param requestBody The QAPI request body for this POST request, as a JSON formatted string.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, String version, String requestBody ) throws IOException {
+        if( resourceName == null || resourceName.isBlank() ) {
+            throw new IllegalArgumentException("Error: Cannot get resource with QAPI request due to a null or blank resource name." );
+        }
+        Map<String,String> headers = buildHeadersMap( version );
+        EthosResponse response = post( EthosIntegrationUrls.qapis(getRegion(), resourceName), headers, requestBody );
+        return response;
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param requestBody The QAPI request body for this POST request, as a JSON formatted string.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, String requestBody ) throws IOException {
+        return getWithQAPI( resourceName, DEFAULT_VERSION, requestBody );
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.  The request body is a JsonNode.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param requestBodyNode The QAPI request body for this POST request, as a JsonNode.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, String version, JsonNode requestBodyNode ) throws IOException {
+        if( requestBodyNode == null ) {
+            throw new IllegalArgumentException( String.format("Error: Cannot submit a QAPI POST request for resourceName \"%s\" due to a null requestBody JsonNode param.", resourceName) );
+        }
+        return getWithQAPI( resourceName, version, requestBodyNode.toString() );
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.  The request body is a JsonNode.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param requestBodyNode The QAPI request body for this POST request, as a JsonNode.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, JsonNode requestBodyNode ) throws IOException {
+        return getWithQAPI( resourceName, DEFAULT_VERSION, requestBodyNode );
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.  The request body is a generic type object from the generated SDK object library.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param genericTypeBody A generic type object representing the QAPI POST request body.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, String version, T genericTypeBody ) throws IOException {
+        if( genericTypeBody == null ) {
+            throw new IllegalArgumentException( String.format("Error: Cannot submit a QAPI POST request for resourceName \"%s\" and version \"%s\" due to a null generic type request body param.", resourceName, version) );
+        }
+        String jsonStr = ethosRequestConverter.toJsonString( genericTypeBody );
+        return getWithQAPI( resourceName, version, jsonStr );
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.  The request body is a generic type object from the generated SDK object library.
+     * Uses the default version.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param genericTypeBody A generic type object representing the QAPI POST request body.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, T genericTypeBody ) throws IOException {
+        return getWithQAPI( resourceName, DEFAULT_VERSION, genericTypeBody );
     }
 
     /**
@@ -1590,7 +1673,255 @@ public class EthosFilterQueryClient<T> extends EthosProxyClient {
     }
 
     /**
-     * Gets the total count of resources available using the given criteriaFilter.
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody JSON formatted string for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, String qapiRequestBody, int pageSize, int offset ) throws IOException {
+        if( resourceName == null || resourceName.isBlank() ) {
+            throw new IllegalArgumentException("Error: Cannot get pages of resource with QAPI due to a null or blank resource name." );
+        }
+        if( qapiRequestBody == null || qapiRequestBody.isBlank() ) {
+            throw new IllegalArgumentException("Error: Cannot get pages of resource with QAPI due to a null or blank QAPI request body." );
+        }
+        List<EthosResponse> ethosResponseList = new ArrayList<>();
+        Pager pager = new Pager.Builder(resourceName)
+                .forVersion(version)
+                .withQAPIRequestBodyFilter(qapiRequestBody)
+                .withPageSize(pageSize)
+                .fromOffset(offset)
+                .build();
+        pager = prepareForPaging( pager );
+        pager = shouldDoPaging( pager, false );
+        if( pager.isShouldDoPaging() ) {
+            ethosResponseList = doPagingFromOffsetForQAPI( pager.getResourceName(), pager.getVersion(), qapiRequestBody, pager.getTotalCount(), pager.getPageSize(), pager.getOffset() );
+        }
+        else {
+            ethosResponseList.add( getWithQAPI(resourceName, version, qapiRequestBody) );
+        }
+        return ethosResponseList;
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody JSON formatted string for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, String qapiRequestBody, int pageSize ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBody, pageSize, 0 );
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param qapiRequestBody JSON formatted string for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, int offset, String qapiRequestBody ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBody, DEFAULT_PAGE_SIZE, offset );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody JSON formatted string for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, String qapiRequestBody ) throws IOException {
+        return getPagesWithQAPI( resourceName, version, qapiRequestBody, DEFAULT_PAGE_SIZE );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body.
+     * Uses the default page size and default version.
+     * @param resourceName The name of the resource to get data for.
+     * @param qapiRequestBody JSON formatted string for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String qapiRequestBody ) throws IOException {
+        return getPagesWithQAPI( resourceName, DEFAULT_VERSION, qapiRequestBody );
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBodyNode JsonNode for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, JsonNode qapiRequestBodyNode, int pageSize, int offset ) throws IOException {
+        if( qapiRequestBodyNode == null ) {
+            throw new IllegalArgumentException("Error: Cannot get pages of resource with QAPI due to a null request body JsonNode." );
+        }
+        String qapiRequestBodyStr = qapiRequestBodyNode.toString();
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBodyStr, pageSize, offset );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBodyNode JSON formatted string for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, JsonNode qapiRequestBodyNode, int pageSize ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBodyNode, pageSize, 0 );
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param qapiRequestBodyNode JsonNode for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, int offset, JsonNode qapiRequestBodyNode ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBodyNode, DEFAULT_PAGE_SIZE, offset );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBodyNode JsonNode for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, JsonNode qapiRequestBodyNode ) throws IOException {
+        return getPagesWithQAPI( resourceName, version, qapiRequestBodyNode, DEFAULT_PAGE_SIZE );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body.
+     * Uses the default page size and default version.
+     * @param resourceName The name of the resource to get data for.
+     * @param qapiRequestBodyNode JsonNode for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, JsonNode qapiRequestBodyNode ) throws IOException {
+        return getPagesWithQAPI( resourceName, DEFAULT_VERSION, qapiRequestBodyNode );
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody generic object type for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, T qapiRequestBody, int pageSize, int offset ) throws IOException {
+        if( qapiRequestBody == null ) {
+            throw new IllegalArgumentException("Error: Cannot get pages of resource with QAPI due to a null request body generic object type." );
+        }
+        String qapiRequestBodyStr = ethosRequestConverter.toJsonString( qapiRequestBody );
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBodyStr, pageSize, offset );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody generic object type for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, T qapiRequestBody, int pageSize ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBody, pageSize, 0 );
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param qapiRequestBody generic object type for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, int offset, T qapiRequestBody ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBody, DEFAULT_PAGE_SIZE, offset );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody generic object type for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, T qapiRequestBody ) throws IOException {
+        return getPagesWithQAPI( resourceName, version, qapiRequestBody, DEFAULT_PAGE_SIZE );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body.
+     * Uses the default page size and default version.
+     * @param resourceName The name of the resource to get data for.
+     * @param qapiRequestBody generic object type for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, T qapiRequestBody ) throws IOException {
+        return getPagesWithQAPI( resourceName, DEFAULT_VERSION, qapiRequestBody );
+    }
+
+    /**
+     * Gets the total count of resources available using the given criteriaFilter.  Uses the default version.
      * @param resourceName The name of the Ethos resource to get a total count for.
      * @param criteriaFilter The criteria filter to use when determining how many instances of the resource are available using that filter.
      * @return The number of resource instances available when making a GET request using the given criteriaFilter, or 0 if the
@@ -1624,7 +1955,7 @@ public class EthosFilterQueryClient<T> extends EthosProxyClient {
     }
 
     /**
-     * Gets the total count of resources available using the given namedQueryFilter.
+     * Gets the total count of resources available using the given namedQueryFilter.  Uses the default version.
      * @param resourceName The name of the Ethos resource to get a total count for.
      * @param namedQueryFilter The named query filter to use when determining how many instances of the resource are available using that filter.
      * @return The number of resource instances available when making a GET request using the given namedQueryFilter, or 0 if the
@@ -1657,6 +1988,18 @@ public class EthosFilterQueryClient<T> extends EthosProxyClient {
     }
 
     /**
+     * Gets the total count of resources available using the given filterMap.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param filterMap The filter map to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, FilterMap filterMap ) throws IOException {
+        return getTotalCount( resourceName, DEFAULT_VERSION, filterMap );
+    }
+
+    /**
      * Gets the total count of resources available using the given filterMap.
      * @param resourceName The name of the Ethos resource to get a total count for.
      * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
@@ -1677,6 +2020,104 @@ public class EthosFilterQueryClient<T> extends EthosProxyClient {
         return Integer.valueOf( totalCount );
     }
 
+    /**
+     * Gets the total count of resources available using the given QAPI request body.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody The QAPI request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, String version, String qapiRequestBody ) throws IOException {
+        if( resourceName == null || resourceName.isBlank() ) {
+            return 0;
+        }
+        if( qapiRequestBody == null ) {
+            return 0;
+        }
+        EthosResponse ethosResponse = getWithQAPI( resourceName, version, qapiRequestBody );
+        String totalCount = getHeaderValue( ethosResponse, HDR_X_TOTAL_COUNT );
+        return Integer.valueOf( totalCount );
+    }
+
+    /**
+     * Gets the total count of resources available using the given QAPI request body.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param qapiRequestBody The QAPI request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, String qapiRequestBody ) throws IOException {
+        return getTotalCount( resourceName, DEFAULT_VERSION, qapiRequestBody );
+    }
+
+    /**
+     * Gets the total count of resources available using the given QAPI request body.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBodyNode The QAPI JsonNode request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, String version, JsonNode qapiRequestBodyNode ) throws IOException {
+        if( resourceName == null || resourceName.isBlank() ) {
+            return 0;
+        }
+        if( qapiRequestBodyNode == null ) {
+            return 0;
+        }
+        EthosResponse ethosResponse = getWithQAPI( resourceName, version, qapiRequestBodyNode );
+        String totalCount = getHeaderValue( ethosResponse, HDR_X_TOTAL_COUNT );
+        return Integer.valueOf( totalCount );
+    }
+
+    /**
+     * Gets the total count of resources available using the given QAPI request body.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param qapiRequestBodyNode The QAPI JsonNode request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, JsonNode qapiRequestBodyNode ) throws IOException {
+        return getTotalCount( resourceName, DEFAULT_VERSION, qapiRequestBodyNode );
+    }
+
+    /**
+     * Gets the total count of resources available using the given QAPI request body.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody The QAPI generic object type request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, String version, T qapiRequestBody ) throws IOException {
+        if( resourceName == null || resourceName.isBlank() ) {
+            return 0;
+        }
+        if( qapiRequestBody == null ) {
+            return 0;
+        }
+        EthosResponse ethosResponse = getWithQAPI( resourceName, version, qapiRequestBody );
+        String totalCount = getHeaderValue( ethosResponse, HDR_X_TOTAL_COUNT );
+        return Integer.valueOf( totalCount );
+    }
+
+    /**
+     * Gets the total count of resources available using the given QAPI request body.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param qapiRequestBody The QAPI generic object type request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, T qapiRequestBody ) throws IOException {
+        return getTotalCount( resourceName, DEFAULT_VERSION, qapiRequestBody );
+    }
 
     /**
      * <p><b>Intended to be used internally within the SDK.</b>
@@ -1745,6 +2186,10 @@ public class EthosFilterQueryClient<T> extends EthosProxyClient {
             ethosResponse = getWithFilterMap( pager.getResourceName(), pager.getVersion(), pager.getFilterMap() );
             pager.setEthosResponse( ethosResponse );
         }
+        else if( pager.getQapiRequestBody() != null ) {
+            ethosResponse = getWithQAPI( pager.getResourceName(), pager.getVersion(), pager.getQapiRequestBody() );
+            pager.setEthosResponse( ethosResponse );
+        }
         else {
             super.prepareForPaging( pager ); // Call super.prepareForPaging() if no criteria filter, named query, or filter map is specified.
         }
@@ -1790,6 +2235,32 @@ public class EthosFilterQueryClient<T> extends EthosProxyClient {
             }
         }
         return pager;
+    }
+
+    /**
+     * <p><b>Intended to be used internally within the SDK.</b></p>
+     * Performs paging calculations and operations for QAPI requests.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param requestBody The JSON formatted request body string.
+     * @param totalCount The total count of rows for the given resource.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page,
+     *         beginning from the given offset index.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    protected List<EthosResponse> doPagingFromOffsetForQAPI( String resourceName, String version, String requestBody, int totalCount, int pageSize, int offset ) throws IOException {
+        List<EthosResponse> ethosResponseList = new ArrayList();
+        Map<String,String> headers = buildHeadersMap( version );
+        double numPages = Math.ceil( (Double.valueOf(totalCount) - Double.valueOf(offset)) / Double.valueOf(pageSize) );
+        for( int i = 0; i < numPages; i++ ) {
+            String url = EthosIntegrationUrls.qapiPaging( getRegion(), resourceName, offset, pageSize );
+            EthosResponse response = post( url, headers, requestBody );
+            ethosResponseList.add( response );
+            offset += pageSize;
+        }
+        return ethosResponseList;
     }
 
     /**
