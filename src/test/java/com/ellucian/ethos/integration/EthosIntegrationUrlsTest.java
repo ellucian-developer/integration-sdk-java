@@ -37,4 +37,16 @@ public class EthosIntegrationUrlsTest {
         assertEquals(url, "https://integrate.elluciancloud.com/consume?lastProcessedID=10&limit=100");
     }
 
+    @Test
+    void testQapi() {
+        String url = EthosIntegrationUrls.qapis(SupportedRegions.US, "persons");
+        assertEquals(url, "https://integrate.elluciancloud.com/qapi/persons" );
+    }
+
+    @Test
+    void testQapiPaging() {
+        String url = EthosIntegrationUrls.qapiPaging(SupportedRegions.US, "persons", 20, 30);
+        assertEquals(url, "https://integrate.elluciancloud.com/qapi/persons?offset=20&limit=30" );
+    }
+
 }
