@@ -118,6 +118,11 @@ public class Pager {
     private String        filterMap;
 
     /**
+     * The optional QAPI request body used when making filter QAPI POST request.
+     */
+    private String        qapiRequestBody;
+
+    /**
      * The pagingType for how to page.
      */
     private PagingType    howToPage;
@@ -190,6 +195,11 @@ public class Pager {
         private String        filterMap;
 
         /**
+         * The optional QAPI request body used when making filter QAPI POST request.
+         */
+        private String        qapiRequestBody;
+
+        /**
          * The page size to use when paging.
          */
         private int           pageSize;
@@ -249,7 +259,7 @@ public class Pager {
 
         /**
          * Assigns the specified request URL criteria filter and returns this builder for fluent API functionality.
-         * Nulls out the namedQueryFilter and filterMap because there can only be one filter approach used at a time.
+         * Nulls out the namedQueryFilter, filterMap, and qapiRequestBody because there can only be one filter approach used at a time.
          * @param criteriaFilter The request URL criteria-based filter which can also be used when paging.
          * @return The Builder with the criteria filter assigned.
          */
@@ -257,12 +267,13 @@ public class Pager {
             this.criteriaFilter = criteriaFilter;
             this.namedQueryFilter = null;
             this.filterMap = null;
+            this.qapiRequestBody = null;
             return this;
         }
 
         /**
          * Assigns the specified request URL named query filter and returns this builder for fluent API functionality.
-         * Nulls out the criteriaFilter and filterMap because there can only be one filter approach used at a time.
+         * Nulls out the criteriaFilter, filterMap, and qapiRequestBody because there can only be one filter approach used at a time.
          * @param namedQueryFilter The request URL named query filter which can also be used when paging.
          * @return The Builder with the named query filter assigned.
          */
@@ -270,12 +281,13 @@ public class Pager {
             this.criteriaFilter = null;
             this.namedQueryFilter = namedQueryFilter;
             this.filterMap = null;
+            this.qapiRequestBody = null;
             return this;
         }
 
         /**
          * Assigns the specified request URL filter map and returns this builder for fluent API functionality.
-         * Nulls out the criteriaFilter and namedQueryFilter because there can only be one filter approach used at a time.
+         * Nulls out the criteriaFilter, namedQueryFilter, and qapiRequestBody because there can only be one filter approach used at a time.
          * @param filterMap The request URL filter map which can also be used when paging.
          * @return The Builder with the filter map assigned.
          */
@@ -283,6 +295,21 @@ public class Pager {
             this.criteriaFilter = null;
             this.namedQueryFilter = null;
             this.filterMap = filterMap;
+            this.qapiRequestBody = null;
+            return this;
+        }
+
+        /**
+         * Assigns the specified QAPI request request body and returns this builder for fluent API functionality.
+         * Nulls out the criteriaFilter, namedQueryFilter, and filterMap because there can only be one filter approach used at a time.
+         * @param qapiRequestBody The QAPI request body which can also be used when paging.
+         * @return The Builder with the QAPI request body assigned.
+         */
+        public Builder withQAPIRequestBodyFilter(String qapiRequestBody ) {
+            this.criteriaFilter = null;
+            this.namedQueryFilter = null;
+            this.filterMap = null;
+            this.qapiRequestBody = qapiRequestBody;
             return this;
         }
 
@@ -378,6 +405,7 @@ public class Pager {
             pager.criteriaFilter = this.criteriaFilter;
             pager.namedQueryFilter = this.namedQueryFilter;
             pager.filterMap = this.filterMap;
+            pager.qapiRequestBody = this.qapiRequestBody;
             pager.pageSize = this.pageSize;
             pager.numPages = this.numPages;
             pager.numRows = this.numRows;
@@ -472,6 +500,22 @@ public class Pager {
      */
     public void setFilterMap(String filterMap) {
         this.filterMap = filterMap;
+    }
+
+    /**
+     * Gets the QAPI request body as assigned by the builder.
+     * @return The QAPI request body.
+     */
+    public String getQapiRequestBody() {
+        return qapiRequestBody;
+    }
+
+    /**
+     * Sets the QAPI request body.
+     * @param qapiRequestBody The QAPI request body content.
+     */
+    public void setQapiRequestBody(String qapiRequestBody) {
+        this.qapiRequestBody = qapiRequestBody;
     }
 
     /**
