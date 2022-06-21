@@ -1,3 +1,8 @@
+/*
+ * ******************************************************************************
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
+ * ******************************************************************************
+ */
 package com.ellucian.ethos.integration.authentication;
 
 import java.time.LocalDateTime;

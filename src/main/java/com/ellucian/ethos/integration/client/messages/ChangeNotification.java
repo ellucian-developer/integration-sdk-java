@@ -1,7 +1,11 @@
+/*
+ * ******************************************************************************
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
+ * ******************************************************************************
+ */
 package com.ellucian.ethos.integration.client.messages;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.OptBoolean;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

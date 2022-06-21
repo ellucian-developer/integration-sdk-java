@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.http.Header;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,13 +34,6 @@ public class EthosResponseConverter extends EthosResponseBuilder {
     // Attributes
     // ==========================================================================
 
-    /** The date format to use when handling date fields. */
-//    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-//    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'TZD'";
-//    private final String DATE_FORMAT = "dd/MM/yyyy'T'HH:mm:ss.SSS";
-//    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
-//    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-
     /**
      * A Jackson objectMapper to count the number of rows in the response body content,
      * and to convert to the response body to a generic type object.
@@ -53,9 +45,7 @@ public class EthosResponseConverter extends EthosResponseBuilder {
      */
     public EthosResponseConverter() {
         super();
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( DATE_FORMAT );
         this.objectMapper = new ObjectMapper();
-//        this.objectMapper.setDateFormat( simpleDateFormat );
     }
 
     // ==========================================================================

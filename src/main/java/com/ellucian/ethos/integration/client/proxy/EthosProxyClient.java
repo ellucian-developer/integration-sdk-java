@@ -288,9 +288,6 @@ public class EthosProxyClient<T> extends EthosClient {
         if( resourceName == null || resourceName.isBlank() ) {
             throw new IllegalArgumentException( "Error: Cannot submit a PUT request due to a null or blank resourceName param." );
         }
-//        if( resourceId == null || resourceId.isBlank() ) {
-//            throw new IllegalArgumentException( String.format("Error: Cannot submit a PUT request due to a null or blank resourceId param for resource \"%s\".", resourceName) );
-//        }
         if( requestBody == null || requestBody.isBlank() ) {
             throw new IllegalArgumentException( String.format("Error: Cannot submit a PUT request for resourceName \"%s\" due to a null or empty requestBody param.", resourceName) );
         }
