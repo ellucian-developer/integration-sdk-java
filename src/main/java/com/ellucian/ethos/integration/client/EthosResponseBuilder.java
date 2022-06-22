@@ -1,6 +1,6 @@
 /*
  * ******************************************************************************
- *   Copyright  2020 Ellucian Company L.P. and its affiliates.
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
  * ******************************************************************************
  */
 package com.ellucian.ethos.integration.client;
@@ -11,9 +11,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Intended to be used to more easily build an EthosResponse object from the given <code>org.apache.http.HttpResponse</code>.

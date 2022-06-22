@@ -1,3 +1,8 @@
+/*
+ * ******************************************************************************
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
+ * ******************************************************************************
+ */
 package com.ellucian.ethos.integration.client.errors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -12,16 +17,19 @@ public class Resource {
 
     private String id;
     private String name;
+    private String version;
 
     /**
      * Create an instance of a Resource.
      * @param id the ID of the resource
      * @param name the name of the resource
+     * @param version the version of the resource
      */
     @JsonCreator
-    public Resource(@JsonProperty("id") String id, @JsonProperty("name") String name){
+    public Resource(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("version") String version){
         this.id = id;
         this.name = name;
+        this.version = version;
     }
 
     /**
@@ -40,4 +48,11 @@ public class Resource {
         return name;
     }
 
+    /**
+     * Get the version of the resource that erred.
+     * @return the resource version
+     */
+    public String getVersion() {
+        return version;
+    }
 }

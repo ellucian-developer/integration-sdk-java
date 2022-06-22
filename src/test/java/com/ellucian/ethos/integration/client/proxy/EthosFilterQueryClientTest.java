@@ -5,11 +5,15 @@
  */
 package com.ellucian.ethos.integration.client.proxy;
 
+import com.ellucian.ethos.integration.client.EthosRequestConverter;
 import com.ellucian.ethos.integration.client.EthosResponse;
 import com.ellucian.ethos.integration.client.proxy.filter.CriteriaFilter;
 import com.ellucian.ethos.integration.client.proxy.filter.FilterMap;
 import com.ellucian.ethos.integration.client.proxy.filter.NamedQueryFilter;
 import com.ellucian.ethos.integration.client.proxy.filter.SimpleCriteria;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.Assertions;
@@ -1540,6 +1544,130 @@ public class EthosFilterQueryClientTest {
         // Verify the result.
         assert( resultPager != null );
         assert( resultPager.getPageSize() == EthosFilterQueryClient.DEFAULT_MAX_PAGE_SIZE );
+    }
+
+    @Test
+    public void getWithQAPIThrowsExceptionTest() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            String resourceName = null;
+            String version = "someVersion";
+            String requestBody = "someBody";
+            spyEthosFilterQueryClient.getWithQAPI( resourceName, version, requestBody );
+        });
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            String resourceName = "";
+            String version = "someVersion";
+            String requestBody = "someBody";
+            spyEthosFilterQueryClient.getWithQAPI( resourceName, version, requestBody );
+        });
+    }
+
+    @Test
+    public void getWithQAPIUsingVersionTest() throws IOException {
+        EthosResponse expectedEthosResponse = buildEthosResponse();
+        String resource = "someResource";
+        String version = "someVersion";
+        String requestBody = "{\"someLabel\":\"someValue\"}";
+        // Return the expectedResponse when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).post( anyString(), anyMap(), anyString() );
+        // Run the test.
+        EthosResponse ethosResponse = spyEthosFilterQueryClient.getWithQAPI( resource, version, requestBody );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).post( anyString(), anyMap(), anyString() );
+    }
+
+    @Test
+    public void getWithQAPITest() throws IOException {
+        EthosResponse expectedEthosResponse = buildEthosResponse();
+        String resource = "someResource";
+        String requestBody = "{\"someLabel\":\"someValue\"}";
+        // Return the expectedResponse when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getWithQAPI( resource, EthosProxyClient.DEFAULT_VERSION, requestBody );
+        // Run the test.
+        EthosResponse ethosResponse = spyEthosFilterQueryClient.getWithQAPI( resource, requestBody );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getWithQAPI( resource, EthosProxyClient.DEFAULT_VERSION, requestBody );
+    }
+
+    @Test
+    public void getWithQAPIUsingJsonNodeRequestBodyThrowsExceptionTest() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            String resourceName = "someResource";
+            String version = "someVersion";
+            JsonNode requestBody = null;
+            spyEthosFilterQueryClient.getWithQAPI( resourceName, version, requestBody );
+        });
+    }
+
+    @Test
+    public void getWithQAPIUsingJsonNodeRequestBodyAndVersionTest() throws IOException {
+        EthosResponse expectedEthosResponse = buildEthosResponse();
+        String resource = "someResource";
+        String version = "someVersion";
+        ObjectNode requestBodyNode = JsonNodeFactory.instance.objectNode();
+        requestBodyNode.put("someLabel", "someValue");
+        // Return the expectedResponse when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getWithQAPI( resource, version, requestBodyNode.toString() );
+        // Run the test.
+        EthosResponse ethosResponse = spyEthosFilterQueryClient.getWithQAPI( resource, version, requestBodyNode );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getWithQAPI( resource, version, requestBodyNode.toString() );
+    }
+
+    @Test
+    public void getWithQAPIUsingJsonNodeRequestBodyTest() throws IOException {
+        EthosResponse expectedEthosResponse = buildEthosResponse();
+        String resource = "someResource";
+        ObjectNode requestBodyNode = JsonNodeFactory.instance.objectNode();
+        requestBodyNode.put("someLabel", "someValue");
+        // Return the expectedResponse when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getWithQAPI( resource, EthosProxyClient.DEFAULT_VERSION, requestBodyNode );
+        // Run the test.
+        EthosResponse ethosResponse = spyEthosFilterQueryClient.getWithQAPI( resource, requestBodyNode );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getWithQAPI( resource, EthosProxyClient.DEFAULT_VERSION, requestBodyNode );
+    }
+
+    @Test
+    public void getWithQAPIUsingGenericObjectRequestBodyThrowsExceptionTest() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            String resourceName = "someResource";
+            String version = "someVersion";
+            SomeQAPIRequestBody requestBody = null;
+            spyEthosFilterQueryClient.getWithQAPI( resourceName, version, requestBody );
+        });
+    }
+
+    @Test
+    public void getWithQAPIUsingGenericObjectRequestBodyAndVersionTest() throws IOException {
+        EthosResponse expectedEthosResponse = buildEthosResponse();
+        String resource = "someResource";
+        SomeQAPIRequestBody someQAPIRequestBody = new SomeQAPIRequestBody();
+        someQAPIRequestBody.setSomeProperty("someProperty");
+        String version = "someVersion";
+        EthosRequestConverter ethosRequestConverter = new EthosRequestConverter();
+        String requestBodyStr = ethosRequestConverter.toJsonString( someQAPIRequestBody );
+        // Return the expectedResponse when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getWithQAPI( resource, version, requestBodyStr );
+        // Run the test.
+        EthosResponse ethosResponse = spyEthosFilterQueryClient.getWithQAPI( resource, version, someQAPIRequestBody );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getWithQAPI( resource, version, requestBodyStr );
+    }
+
+    @Test
+    public void getWithQAPIUsingGenericObjectRequestBodyTest() throws IOException {
+        EthosResponse expectedEthosResponse = buildEthosResponse();
+        String resource = "someResource";
+        SomeQAPIRequestBody someQAPIRequestBody = new SomeQAPIRequestBody();
+        someQAPIRequestBody.setSomeProperty("someProperty");
+        // Return the expectedResponse when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getWithQAPI( resource, EthosProxyClient.DEFAULT_VERSION, someQAPIRequestBody );
+        // Run the test.
+        EthosResponse ethosResponse = spyEthosFilterQueryClient.getWithQAPI( resource, someQAPIRequestBody );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getWithQAPI( resource, EthosProxyClient.DEFAULT_VERSION, someQAPIRequestBody );
     }
 
 }

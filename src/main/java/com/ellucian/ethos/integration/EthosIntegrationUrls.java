@@ -1,3 +1,8 @@
+/*
+ * ******************************************************************************
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
+ * ******************************************************************************
+ */
 package com.ellucian.ethos.integration;
 
 import com.ellucian.ethos.integration.authentication.SupportedRegions;
@@ -127,6 +132,38 @@ public class EthosIntegrationUrls {
         return buildUrl(region, "/errors");
     }
 
+    /**
+     * Builds a URL for interacting with the Proxy APIs through Ethos Integration for QAPI POST requests.
+     * @param region The appropriate supported region to build the URL with.
+     * @param resource The Ethos resource the URL should contain.
+     * @return A String value containing the URL to use for interacting with Ethos Integration Proxy APIs.
+     */
+    public static String qapis(SupportedRegions region, String resource)
+    {
+        String url = buildUrl(region, "/qapi");
+        if( resource != null && resource.trim().isEmpty() == false ) {
+            StringBuilder sb = new StringBuilder();
+            sb.append( url );
+            sb.append( "/" );
+            sb.append( resource );
+            url = sb.toString();
+        }
+        return url;
+    }
+
+
+    /**
+      * Builds a URL for interacting with the proxy APIs through Ethos Integration supporting paging for QAPI POST requests
+      * @param region The appropriate supported region to build the URL with.
+      * @param resource The Ethos resource the URL should contain.
+      * @param offset The row index from which to begin paging for data for the given resource.
+      * @param pageSize The number of rows each response can contain.
+      * @return A String value containing the URL to use for interacting with Ethos Integration Proxy APIs.
+     */
+    public static String qapiPaging( SupportedRegions region, String resource, int offset, int pageSize ) {
+        String url = qapis( region, resource );
+        return addPaging( url, offset, pageSize );
+    }
 
     /**
      * Builds an Ethos Integration URL supporting the Token API.

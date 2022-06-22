@@ -5,7 +5,7 @@
 
     <groupId>com.ellucian.ethos.integration.sdk</groupId>
     <artifactId>integration-sdk-java</artifactId>
-    <version>0.4.0</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>Ellucian Ethos Integration Java SDK</name>
@@ -13,7 +13,7 @@
         Develop applications that integrate with Ellucian Ethos Integration using your own code and our Java libraries, without the need to call REST APIs.
         Please note that this package is still under development and will be subject to change in the coming months.
     </description>
-    <url>https://github.com/ellucianEthos</url>
+    <url>https://github.com/ellucian-developer</url>
 
     <licenses>
         <license>
@@ -29,12 +29,6 @@
             <organizationUrl>https://www.ellucian.com</organizationUrl>
         </developer>
     </developers>
-    <scm>
-        <connection>scm:git:git://github.com/ellucianEthos/integration-sdk-java.git</connection>
-        <developerConnection>scm:git:ssh://github.com:ellucianEthos/integration-sdk-java.git</developerConnection>
-        <url>http://github.com/ellucianEthos/integration-sdk-java/tree/master</url>
-        <tag>integration-sdk-java-0.0.1</tag>
-    </scm>
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -56,46 +50,30 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.11.0</version>
+            <version>2.13.2.2</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.fge</groupId>
-            <artifactId>jackson-coreutils</artifactId>
-            <version>1.8</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <!--https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.12</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-core</artifactId>
-            <version>1.1.0</version>
+            <version>4.5.13</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.6.2</version>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.6.2</version>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.4.6</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>3.5.13</version>
+            <version>4.5.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -106,6 +84,34 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>bpapi/**</exclude>
+                                <exclude>eedm/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <sourcepath>src/main/java</sourcepath>
+                            <show>private</show>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-shade-plugin</artifactId>
                         <version>2.1</version>
                         <executions>
@@ -114,16 +120,6 @@
                                 <goals>
                                     <goal>shade</goal>
                                 </goals>
-                                <configuration>
-                                    <transformers>
-                                        <transformer
-                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                            <mainClass>
-                                                com.ellucian.ethos.integration.sample.commandline.GetAccessTokenExample
-                                            </mainClass>
-                                        </transformer>
-                                    </transformers>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -154,7 +150,6 @@
                                 </goals>
                                 <configuration>
                                     <dataFile>${project.build.directory}/jacoco.exec</dataFile>
-                                    <excludes>${project.build.directory}/com/ellucian/ethos/integration/sample/commandline/*.class</excludes>
                                 </configuration>
                             </execution>
                         </executions>
@@ -163,6 +158,12 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
                         <version>2.2.1</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>eedm/**</exclude>
+                                <exclude>bpapi/**</exclude>
+                            </excludes>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -174,26 +175,8 @@
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <configuration>
-                            <sourcepath>src/main/java</sourcepath>
-                            <show>private</show>
-                            <excludePackageNames>com.ellucian.ethos.integration.sample.*</excludePackageNames>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -231,16 +214,6 @@
                                 <goals>
                                     <goal>shade</goal>
                                 </goals>
-                                <configuration>
-                                    <transformers>
-                                        <transformer
-                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                            <mainClass>
-                                                com.ellucian.ethos.integration.sample.commandline.GetAccessTokenExample
-                                            </mainClass>
-                                        </transformer>
-                                    </transformers>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

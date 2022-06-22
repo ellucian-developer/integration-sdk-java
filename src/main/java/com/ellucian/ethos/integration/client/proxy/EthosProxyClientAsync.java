@@ -1,3 +1,9 @@
+/*
+ * ******************************************************************************
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
+ * ******************************************************************************
+ */
+
 package com.ellucian.ethos.integration.client.proxy;
 
 import com.ellucian.ethos.integration.client.EthosClient;
@@ -12,8 +18,9 @@ import java.util.concurrent.CompletionException;
 /**
  * An EthosProxyClient used to retrieve data from the Ethos Integration Proxy API, asynchronously.
  *
- * This class has the same function and purpose as {@link EthosProxyClient}, but wraps returns in CompletableFutures
- * so that the calls can be made in an asynchronous way.
+ * This class has the same function and purpose as {@link EthosProxyClient}, but the methods returning a List of EthosResponses
+ * have potentially longer response times due to quantity of data returned.  This class therefore wraps returns from those methods
+ * in CompletableFutures so that those calls can be made in an asynchronous way.
  * <p>
  * CompletableFutures can be handled as follows:
  *
@@ -29,7 +36,7 @@ import java.util.concurrent.CompletionException;
  * </pre>
  *
  */
-public class EthosProxyClientAsync extends EthosProxyClient {
+public class EthosProxyClientAsync<T> extends EthosProxyClient {
 
     /**
      * Instantiates this class using the given API key.
@@ -43,7 +50,7 @@ public class EthosProxyClientAsync extends EthosProxyClient {
      * @param socketTimeout            The timeout <b>in seconds</b> when waiting for data between consecutive data packets.
      */
     public EthosProxyClientAsync(String apiKey, Integer connectionTimeout, Integer connectionRequestTimeout, Integer socketTimeout) {
-        super(apiKey, connectionTimeout, connectionRequestTimeout, socketTimeout);
+        super( apiKey, connectionTimeout, connectionRequestTimeout, socketTimeout );
     }
 
     /**
@@ -57,7 +64,7 @@ public class EthosProxyClientAsync extends EthosProxyClient {
      *         represents a page of data.
      * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
      */
-    public CompletableFuture<List<EthosResponse>> getAllPagesAsync(String resourceName ) throws CompletionException {
+    public CompletableFuture<List<EthosResponse>> getAllPagesAsync( String resourceName ) throws CompletionException {
         return getAllPagesAsync( resourceName, DEFAULT_PAGE_SIZE );
     }
 
@@ -106,8 +113,7 @@ public class EthosProxyClientAsync extends EthosProxyClient {
      *         represents a page of data with the given page size according to the requested version of the resource.
      * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
      */
-    public CompletableFuture<List<EthosResponse>> getAllPagesAsync(String resourceName, String version, int pageSize)
-            throws CompletionException {
+    public CompletableFuture<List<EthosResponse>> getAllPagesAsync(String resourceName, String version, int pageSize) throws CompletionException {
         CompletableFuture<List<EthosResponse>> asyncResponse = CompletableFuture.supplyAsync(() -> {
             List<EthosResponse> response;
             try {
@@ -118,6 +124,88 @@ public class EthosProxyClientAsync extends EthosProxyClient {
             return response;
         });
         return asyncResponse;
+    }
+
+    /**
+     * Gets all pages for the given resource, version, page size, and return the response bodies as generic type objects of the
+     * given class in each returned EthosResponse, if the classType is not null.  If the classType is null, the returned EthosResponse
+     * will not contain a generic type object response body, but only a JSON formatted string response body.
+     * <p><b>NOTE: This method could result in a long running process and return a large volume of data.  It is possible that
+     * an <code>OutOfMemoryError</code> could occur if trying to get a large quantity of data.  This is NOT intended to be
+     * used for any kind of resource bulk loading of data.  The Ethos bulk loading solution should be used for loading
+     * data in Ethos data model format in bulk.</b></p>
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where the content of each <code>EthosResponse</code> in the list
+     *         represents a page of data with the given page size according to the requested version of the resource.
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getAllPagesAsync( String resourceName, String version, int pageSize, Class classType ) throws CompletionException {
+        CompletableFuture<List<EthosResponse>> asyncResponse = CompletableFuture.supplyAsync(() -> {
+            List<EthosResponse> response;
+            try {
+                response = getAllPages( resourceName, version, pageSize, classType );
+            } catch (IOException e) {
+                throw new CompletionException(e);
+            }
+            return response;
+        });
+        return asyncResponse;
+    }
+
+    /**
+     * Gets all pages for the given resource and page size, and return the response bodies as generic type objects of the
+     * given class in each returned EthosResponse.  Uses the default version of the resource.
+     * <p><b>NOTE: This method could result in a long running process and return a large volume of data.  It is possible that
+     * an <code>OutOfMemoryError</code> could occur if trying to get a large quantity of data.  This is NOT intended to be
+     * used for any kind of resource bulk loading of data.  The Ethos bulk loading solution should be used for loading
+     * data in Ethos data model format in bulk.</b></p>
+     * @param resourceName The name of the resource to get data for.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where the content of each <code>EthosResponse</code> in the list
+     *         represents a page of data with the given page size according to the current version of the resource.
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getAllPagesAsync( String resourceName, int pageSize, Class classType ) throws CompletionException {
+        return getAllPagesAsync( resourceName, DEFAULT_VERSION, pageSize, classType );
+    }
+
+    /**
+     * Gets all pages for the given resource, and return the response bodies as generic type objects of the
+     * given class in each returned EthosResponse.  Uses the default page size of the response body content length, and the default version.
+     * <p><b>NOTE: This method could result in a long running process and return a large volume of data.  It is possible that
+     * an <code>OutOfMemoryError</code> could occur if trying to get a large quantity of data.  This is NOT intended to be
+     * used for any kind of resource bulk loading of data.  The Ethos bulk loading solution should be used for loading
+     * data in Ethos data model format in bulk.</b></p>
+     * @param resourceName The name of the resource to get data for.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where the content of each <code>EthosResponse</code> in the list
+     *         represents a page of data.
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getAllPagesAsync( String resourceName, Class classType ) throws CompletionException {
+        return getAllPagesAsync( resourceName, DEFAULT_PAGE_SIZE, classType );
+    }
+
+    /**
+     * Gets all pages for the given resource and version, and return the response bodies as generic type objects of the
+     * given class in each returned EthosResponse.  Uses the default page size of the response body content length.
+     * <p><b>NOTE: This method could result in a long running process and return a large volume of data.  It is possible that
+     * an <code>OutOfMemoryError</code> could occur if trying to get a large quantity of data.  This is NOT intended to be
+     * used for any kind of resource bulk loading of data.  The Ethos bulk loading solution should be used for loading
+     * data in Ethos data model format in bulk.</b></p>
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where the content of each <code>EthosResponse</code> in the list
+     *         represents a page of data according to the requested version of the resource.
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getAllPagesAsync( String resourceName, String version, Class classType ) throws CompletionException {
+        return getAllPagesAsync( resourceName, version, DEFAULT_PAGE_SIZE, classType );
     }
 
     /**
@@ -354,6 +442,94 @@ public class EthosProxyClientAsync extends EthosProxyClient {
     }
 
     /**
+     * Gets all pages for the given resource, version, and page size, from the offset.  Returns the response bodies as generic type objects of the
+     * given class in each returned EthosResponse, if the classType is not null.  If the classType is null, the returned EthosResponse
+     * will not contain a generic type object response body, but only a JSON formatted string response body.  If the offset is negative, all pages
+     * will be returned.
+     * <p><b>NOTE: This method could result in a long running process and return a large volume of data.  It is possible that
+     * an <code>OutOfMemoryError</code> could occur if trying to get a large quantity of data.  This is NOT intended to be
+     * used for any kind of resource bulk loading of data.  The Ethos bulk loading solution should be used for loading
+     * data in Ethos data model format in bulk.</b></p>
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s from the given offset where the content of each <code>EthosResponse</code> in the list
+     *         represents a page of data with the given page size according to the requested version of the resource.
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getAllPagesFromOffsetAsync( String resourceName, String version, int offset, int pageSize, Class classType ) throws CompletionException {
+        CompletableFuture<List<EthosResponse>> responseCompletableFuture = CompletableFuture.supplyAsync(() -> {
+            List<EthosResponse> response = null;
+            try {
+                response = getAllPagesFromOffset( resourceName, version, offset, pageSize, classType );
+            } catch (IOException e) {
+                throw new CompletionException(e);
+            }
+            return response;
+        });
+        return responseCompletableFuture;
+    }
+
+    /**
+     * Gets all pages for the given resource from the given offset.  Uses the default page size of the response body content length,
+     * and the default version.  Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * <p><b>NOTE: This method could result in a long running process and return a large volume of data.  It is possible that
+     * an <code>OutOfMemoryError</code> could occur if trying to get a large quantity of data.  This is NOT intended to be
+     * used for any kind of resource bulk loading of data.  The Ethos bulk loading solution should be used for loading
+     * data in Ethos data model format in bulk.</b></p>
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s from the given offset where the content of each <code>EthosResponse</code> in the list
+     *         represents a page of data according to the default version of the resource.
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getAllPagesFromOffsetAsync( String resourceName, int offset, Class classType ) throws CompletionException {
+        return this.getAllPagesFromOffsetAsync(resourceName, offset, DEFAULT_MAX_PAGE_SIZE, classType );
+    }
+
+    /**
+     * Gets all pages for the given resource, offset, and page size.  Uses the default version of the resource.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * <p><b>NOTE: This method could result in a long running process and return a large volume of data.  It is possible that
+     * an <code>OutOfMemoryError</code> could occur if trying to get a large quantity of data.  This is NOT intended to be
+     * used for any kind of resource bulk loading of data.  The Ethos bulk loading solution should be used for loading
+     * data in Ethos data model format in bulk.</b></p>
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s from the given offset where the content of each <code>EthosResponse</code> in the list
+     *         represents a page of data with the given page size according to the default version of the resource.
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getAllPagesFromOffsetAsync( String resourceName, int offset, int pageSize, Class classType ) throws CompletionException {
+        return this.getAllPagesFromOffsetAsync( resourceName, DEFAULT_VERSION, offset, pageSize, classType );
+    }
+
+
+    /**
+     * Gets all pages for the given resource, version, and offset.  Uses the default page size of the response body content length.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * <p><b>NOTE: This method could result in a long running process and return a large volume of data.  It is possible that
+     * an <code>OutOfMemoryError</code> could occur if trying to get a large quantity of data.  This is NOT intended to be
+     * used for any kind of resource bulk loading of data.  The Ethos bulk loading solution should be used for loading
+     * data in Ethos data model format in bulk.</b></p>
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s from the given offset where the content of each <code>EthosResponse</code> in the list
+     *         represents a page of data with the response content body length as the page size according to the requested version of the resource.
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getAllPagesFromOffsetAsync( String resourceName, String version, int offset, Class classType ) throws CompletionException {
+        return this.getAllPagesFromOffsetAsync(resourceName, version, offset, DEFAULT_PAGE_SIZE, classType );
+    }
+
+    /**
      * Gets all pages for the given resource from the given offset.  Uses the default page size of the response body content length,
      * and the default version of the resource.
      * <p><b>NOTE: This method could result in a long running process and return a large volume of data.  It is possible that
@@ -584,6 +760,82 @@ public class EthosProxyClientAsync extends EthosProxyClient {
     }
 
     /**
+     * Gets some number of pages for the given resource, version, and page size.  If numPages is negative, all pages
+     * will be returned.  Returns the response bodies as generic type objects of the given class in each returned EthosResponse,
+     * if the classType is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object
+     * response body, but only a JSON formatted string response body.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the requested version of the resource, up to the
+     *         number of pages specified or the max number of pages (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getPagesAsync( String resourceName, String version, int pageSize, int numPages, Class classType ) throws CompletionException {
+        CompletableFuture<List<EthosResponse>> responseCompletableFuture = CompletableFuture.supplyAsync(() -> {
+            List<EthosResponse> response = null;
+            try {
+                response = getPages( resourceName, version, pageSize, numPages, classType );
+            } catch (IOException e) {
+                throw new CompletionException(e);
+            }
+            return response;
+        });
+        return responseCompletableFuture;
+    }
+
+    /**
+     * Gets some number of pages for the given resource.  Uses the default page size of the response body content length,
+     * and default version.  Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the default version of the resource, up to the
+     *         number of pages specified or the max number of pages (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getPagesAsync( String resourceName, int numPages, Class classType ) throws CompletionException {
+        return getPagesAsync( resourceName, DEFAULT_VERSION, numPages, classType );
+    }
+
+    /**
+     * Gets some number of pages for the given resource and version.  Uses the default page size of the response body content length.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the requested version of the resource, up to the
+     *         number of pages specified or the max number of pages (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getPagesAsync( String resourceName, String version, int numPages, Class classType ) throws CompletionException {
+        return getPagesAsync( resourceName, version, DEFAULT_PAGE_SIZE, numPages, classType );
+    }
+
+
+    /**
+     * Gets some number of pages for the given resource and page size.  Uses the default version of the resource.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the default version of the resource, up to the
+     *         number of pages specified or the max number of pages (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getPagesAsync( String resourceName, int pageSize, int numPages, Class classType ) throws CompletionException {
+        return getPagesAsync( resourceName, DEFAULT_VERSION, pageSize, numPages, classType );
+    }
+
+    /**
      * Gets some number of pages for the given resource.  Uses the default page size of the response body content length,
      * and the default version of the resource.
      * @param resourceName The name of the Ethos resource to get data for.
@@ -789,6 +1041,91 @@ public class EthosProxyClientAsync extends EthosProxyClient {
         });
         return responseCompletableFuture;
     }
+
+    /**
+     * Gets some number of pages for the given resource, version, and page size, from the given offset.  If both the offset
+     * and numPages are negative, all pages will be returned.  If the offset is negative, pages up to the numPages will
+     * be returned.  If numPages is negative, all pages from the offset will be returned.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse,
+     * if the classType is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object
+     * response body, but only a JSON formatted string response body.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the requested version of the resource,
+     *         beginning at the given offset index and up to the number of pages specified or the max number of pages (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getPagesFromOffsetAsync( String resourceName, String version, int pageSize,
+                                                                           int offset, int numPages, Class classType ) throws CompletionException {
+
+        CompletableFuture<List<EthosResponse>> responseCompletableFuture = CompletableFuture.supplyAsync(() -> {
+            List<EthosResponse> response = null;
+            try {
+                response = this.getPagesFromOffset( resourceName, version, pageSize, offset, numPages, classType );
+            } catch (IOException e) {
+                throw new CompletionException(e);
+            }
+            return response;
+        });
+        return responseCompletableFuture;
+    }
+
+    /**
+     * Gets some number of pages for the given resource from the given offset.  Uses the default page size of the response
+     * body content length, and the default version of the resource.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the default version of the resource,
+     *         beginning at the given offset index and up to the number of pages specified or the max number of pages (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getPagesFromOffsetAsync( String resourceName, int offset, int numPages, Class classType ) throws CompletionException {
+        return getPagesFromOffsetAsync( resourceName, DEFAULT_VERSION, offset, numPages, classType );
+    }
+
+    /**
+     * Gets some number of pages for the given resource and page size from the given offset.  Uses the default version of the resource.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the default version of the resource,
+     *         beginning at the given offset index and up to the number of pages specified or the max number of pages (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getPagesFromOffsetAsync( String resourceName, int pageSize, int offset, int numPages, Class classType ) throws CompletionException {
+        return getPagesFromOffsetAsync( resourceName, DEFAULT_VERSION, pageSize, offset, numPages, classType );
+    }
+
+    /**
+     * Gets some number of pages for the given resource and version from the given offset.  Uses the default page size of the response
+     * body content length.  Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numPages The number of pages of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the requested version of the resource,
+     *         beginning at the given offset index and up to the number of pages specified or the max number of pages (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getPagesFromOffsetAsync( String resourceName, String version, int offset, int numPages, Class classType ) throws CompletionException {
+        return getPagesFromOffsetAsync( resourceName, version, DEFAULT_PAGE_SIZE, offset, numPages, classType );
+    }
+
 
     /**
      * Gets some number of pages for the given resource from the given offset.  Uses the default page size of the response
@@ -1006,6 +1343,87 @@ public class EthosProxyClientAsync extends EthosProxyClient {
             return response;
         });
         return responseCompletableFuture;
+    }
+
+    /**
+     * Gets some number of rows for the given resource, version, and page size.  The number of rows is returned as a
+     * paged-based list of EthosResponses, altogether containing the number of rows.  If numRows is negative, all pages will be returned.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse,
+     * if the classType is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object
+     * response body, but only a JSON formatted string response body.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the requested version of the resource,
+     *         up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getRowsAsync( String resourceName, String version, int pageSize, int numRows, Class classType ) throws CompletionException {
+        CompletableFuture<List<EthosResponse>> responseCompletableFuture = CompletableFuture.supplyAsync(() -> {
+            List<EthosResponse> response = null;
+            try {
+                response = getRows( resourceName, version, pageSize, numRows, classType );
+            } catch (IOException e) {
+                throw new CompletionException(e);
+            }
+            return response;
+        });
+        return responseCompletableFuture;
+    }
+
+    /**
+     * Gets some number of rows for the given resource.  The number of rows is returned as a
+     * paged-based list of EthosResponses, altogether containing the number of rows.  Uses the default page size
+     * of the response body content length, and the default version of the resource.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the default version of the resource,
+     *         up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getRowsAsync( String resourceName, int numRows, Class classType ) throws CompletionException {
+        return getRowsAsync( resourceName, DEFAULT_VERSION, numRows, classType );
+    }
+
+    /**
+     * Gets some number of rows for the given resource and version.  The number of rows is returned as a
+     * paged-based list of EthosResponses, altogether containing the number of rows.  Uses the default page size of the
+     * response body content length.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the requested version of the resource,
+     *         up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getRowsAsync( String resourceName, String version, int numRows, Class classType ) throws CompletionException {
+        return getRowsAsync( resourceName, version, DEFAULT_PAGE_SIZE, numRows, classType );
+    }
+
+    /**
+     * Gets some number of rows for the given resource and page size.  The number of rows is returned as a
+     * paged-based list of EthosResponses, altogether containing the number of rows.  Uses the default version of the resource.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the default version of the resource,
+     *         up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getRowsAsync( String resourceName, int pageSize, int numRows, Class classType ) throws CompletionException {
+        return getRowsAsync( resourceName, DEFAULT_VERSION, pageSize, numRows, classType );
     }
 
     /**
@@ -1230,6 +1648,92 @@ public class EthosProxyClientAsync extends EthosProxyClient {
         });
         return responseCompletableFuture;
     }
+
+    /**
+     * Gets some number of rows for the given resource, version, and page size, from the given offset.  The number of rows is returned in a list of
+     * pages altogether containing the number of rows.  If both the offset and numRows are negative, all pages will be returned.
+     * If the offset is negative, pages up to the numRows will be returned.  If numRows is negative, all pages from the offset will be returned.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse,
+     * if the classType is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object
+     * response body, but only a JSON formatted string response body.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the requested version of the resource,
+     *         beginning at the given offset index and up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getRowsFromOffsetAsync( String resourceName, String version, int pageSize, int offset, int numRows, Class classType ) throws CompletionException {
+        CompletableFuture<List<EthosResponse>> responseCompletableFuture = CompletableFuture.supplyAsync(() -> {
+            List<EthosResponse> response = null;
+            try {
+                response = getRowsFromOffset( resourceName, version, pageSize, offset, numRows, classType );
+            } catch (IOException e) {
+                throw new CompletionException(e);
+            }
+            return response;
+        });
+        return responseCompletableFuture;
+    }
+
+    /**
+     * Gets some number of rows for the given resource from the given offset.  The number of rows is returned in a list of
+     * pages altogether containing the number of rows.  Uses the default page size of the response body content length
+     * and the default version of the resource.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the default version of the resource,
+     *         beginning at the given offset index and up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getRowsFromOffsetAsync( String resourceName, int offset, int numRows, Class classType ) throws CompletionException {
+        return getRowsFromOffsetAsync( resourceName, DEFAULT_PAGE_SIZE, offset, numRows, classType );
+    }
+
+    /**
+     * Gets some number of rows for the given resource and page size from the given offset.  The number of rows is returned in a list of
+     * pages altogether containing the number of rows.  Uses the default version of the resource.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the given page size according to the default version of the resource,
+     *         beginning at the given offset index and up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getRowsFromOffsetAsync( String resourceName, int pageSize, int offset, int numRows, Class classType ) throws CompletionException {
+        return getRowsFromOffsetAsync( resourceName, DEFAULT_VERSION, pageSize, offset, numRows, classType );
+    }
+
+    /**
+     * Gets some number of rows for the given resource and version from the given offset.  The number of rows is returned in a list of
+     * pages altogether containing the number of rows.  Uses the default page size of the response body content length.
+     * Returns the response bodies as generic type objects of the given class in each returned EthosResponse.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param numRows The number of rows of the given resource to return.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A CompletableFuture wrapping a list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page of data
+     *         with the response content body length as the page size according to the requested version of the resource,
+     *         beginning at the given offset index and up to the number of rows specified or the total count of the resource (whichever is less).
+     * @throws CompletionException Propagates a wrapped IOException if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public CompletableFuture<List<EthosResponse>> getRowsFromOffsetAsync( String resourceName, String version, int offset, int numRows, Class classType ) throws CompletionException {
+        return this.getRowsFromOffsetAsync( resourceName, version, DEFAULT_PAGE_SIZE, offset, numRows, classType );
+    }
+
 
     /**
      * Gets some number of rows for the given resource from the given offset.  The number of rows is returned as a

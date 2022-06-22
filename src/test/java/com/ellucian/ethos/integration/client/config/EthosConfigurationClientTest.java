@@ -1,16 +1,16 @@
 /*
  * ******************************************************************************
- *   Copyright  2020 Ellucian Company L.P. and its affiliates.
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
  * ******************************************************************************
  */
 package com.ellucian.ethos.integration.client.config;
 
 import com.ellucian.ethos.integration.client.EthosResponse;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jackson.JsonLoader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +31,9 @@ public class EthosConfigurationClientTest {
     // Attributes
     // ==========================================================================
     private EthosConfigurationClient spyEthosConfigurationClient;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     // ==========================================================================
     // Methods
     // ==========================================================================
@@ -84,7 +87,7 @@ public class EthosConfigurationClientTest {
                 "\t\t]\n" +
                 "\t}\n" +
                 "]";
-        return JsonLoader.fromString( availableResourcesStr );
+        return objectMapper.readTree( availableResourcesStr );
     }
 
     @BeforeEach
@@ -156,7 +159,7 @@ public class EthosConfigurationClientTest {
                                    "        }\n" +
                                    "    ]}";
 
-        JsonNode ownerOverridesNode = JsonLoader.fromString( ownerOverridesStr );
+        JsonNode ownerOverridesNode = objectMapper.readTree( ownerOverridesStr );
         JsonNode availableResourcesNode = buildAvailableResourcesNode();
 
         // Return the mock node objects when the method under test calls the methods to be mocked.
@@ -190,7 +193,7 @@ public class EthosConfigurationClientTest {
     @Test
     public void getAvailableResourcesForAppTest() throws Exception {
         String availableResourcesStr = "[{\"id\":\"1d6bd816-7018-49ff-8eea-af696688472e\",\"name\":\"Banner Integration Main\",\"resources\":[{\"name\":\"account-funds-available\"}]}]";
-        JsonNode availableResourcesNode = JsonLoader.fromString( availableResourcesStr );
+        JsonNode availableResourcesNode = objectMapper.readTree( availableResourcesStr );
         // Return the mock node objects when the method under test calls the methods to be mocked.
         Mockito.doReturn(availableResourcesNode).when(spyEthosConfigurationClient).getAvailableResourcesForAppAsJson();
         // Run the test.
@@ -215,7 +218,7 @@ public class EthosConfigurationClientTest {
     public void getResourceDetailsTest() throws Exception {
         String resourceName = "account-funds-available";
         String availableResourcesStr = "[{\"id\":\"1d6bd816-7018-49ff-8eea-af696688472e\",\"name\":\"Banner Integration Main\",\"resources\":[{\"name\":\"account-funds-available\"}]}]";
-        JsonNode availableResourcesNode = JsonLoader.fromString( availableResourcesStr );
+        JsonNode availableResourcesNode = objectMapper.readTree( availableResourcesStr );
         // Return the mock node objects when the method under test calls the methods to be mocked.
         Mockito.doReturn(availableResourcesNode).when(spyEthosConfigurationClient).getResourceDetailsAsJson( resourceName );
         // Run the test.
@@ -1049,7 +1052,7 @@ public class EthosConfigurationClientTest {
                 "   }" +
                 "  }" +
                 "]";
-        JsonNode appResourceArrayNode = JsonLoader.fromString( appResourceStr );
+        JsonNode appResourceArrayNode = objectMapper.readTree( appResourceStr );
         // Return the mock node objects when the method under test calls the methods to be mocked.
         Mockito.doReturn(appResourceArrayNode).when(spyEthosConfigurationClient).getResourceDetailsAsJson( resourceName );
         Mockito.doReturn(versionHeader).when(spyEthosConfigurationClient).getLatestVersionHeader( resourceName );
@@ -1130,7 +1133,7 @@ public class EthosConfigurationClientTest {
                                     "  } ],\n" +
                                     "  \"filters\" : [ \"names.title\", \"names.firstName\", \"names.lastName\", \"roles.role\" ]\n" +
                                     "}";
-        JsonNode resourceFiltersNode = JsonLoader.fromString( resourceFiltersStr );
+        JsonNode resourceFiltersNode = objectMapper.readTree( resourceFiltersStr );
         // Return the mock node objects when the method under test calls the methods to be mocked.
         Mockito.doReturn(resourceFiltersNode).when(spyEthosConfigurationClient).getFiltersAndNamedQueries( resourceName, versionHeader );
         // Run the test.
@@ -1205,7 +1208,7 @@ public class EthosConfigurationClientTest {
                 "  } ],\n" +
                 "  \"filters\" : [ \"names.title\", \"names.firstName\", \"names.lastName\", \"roles.role\" ]\n" +
                 "}";
-        JsonNode resourceFiltersNode = JsonLoader.fromString( resourceFiltersStr );
+        JsonNode resourceFiltersNode = objectMapper.readTree( resourceFiltersStr );
         // Return the mock node objects when the method under test calls the methods to be mocked.
         Mockito.doReturn(resourceFiltersNode).when(spyEthosConfigurationClient).getFiltersAndNamedQueries( resourceName, versionHeader );
         // Run the test.

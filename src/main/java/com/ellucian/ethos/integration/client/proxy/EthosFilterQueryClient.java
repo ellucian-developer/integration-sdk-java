@@ -1,6 +1,6 @@
 /*
  * ******************************************************************************
- *   Copyright 2021 Ellucian Company L.P. and its affiliates.
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
  * ******************************************************************************
  */
 package com.ellucian.ethos.integration.client.proxy;
@@ -10,6 +10,7 @@ import com.ellucian.ethos.integration.client.EthosClient;
 import com.ellucian.ethos.integration.client.EthosClientBuilder;
 import com.ellucian.ethos.integration.client.EthosResponse;
 import com.ellucian.ethos.integration.client.proxy.filter.*;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -24,7 +25,7 @@ import java.util.Map;
  * @since 0.0.1
  * @author David Kumar
  */
-public class EthosFilterQueryClient extends EthosProxyClient {
+public class EthosFilterQueryClient<T> extends EthosProxyClient {
 
     // ==========================================================================
     // Attributes
@@ -86,6 +87,43 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
+     * Gets a page of data for the given resource with the given filter.  Uses the default version of the resource.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaFilterStr The string resource filter in JSON format contained in the URL, e.g: <pre>?criteria={"names":[{"firstName":"John"}]}</pre>
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException Thrown if the given resoureName or criteriaFilterStr is null or blank.
+     */
+    public EthosResponse getWithCriteriaFilter( String resourceName, String criteriaFilterStr, Class classType ) throws IOException {
+        return getWithCriteriaFilter( resourceName, DEFAULT_VERSION, criteriaFilterStr, classType );
+    }
+
+    /**
+     * Gets a page of data for the given resource by name and version with the given filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaFilterStr The string resource filter in JSON format contained in the URL, e.g: <pre>?criteria={"names":[{"firstName":"John"}]}</pre>
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException If the given resourceName is null or blank, or if the given criteriaFilterStr is null or blank.
+     */
+    public EthosResponse getWithCriteriaFilter( String resourceName, String version, String criteriaFilterStr, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithCriteriaFilter( resourceName, version, criteriaFilterStr );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
      * Gets a page of data for the given resource with the given named query filter.  Uses the default version of the resource.
      * @param resourceName The name of the resource to get data for.
      * @param namedQueryFilterStr The string resource filter in JSON format contained in the URL, e.g: <pre>?criteria={"names":[{"firstName":"John"}]}</pre>
@@ -121,6 +159,42 @@ public class EthosFilterQueryClient extends EthosProxyClient {
         return response;
     }
 
+    /**
+     * Gets a page of data for the given resource by name and version with the given named query filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param namedQueryFilterStr The string resource filter in JSON format contained in the URL, e.g: <pre>?instructor={"instructor": {"id": "11111111-1111-1111-1111-111111111111"}}"</pre>
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException If the given resourceName is null or blank, or if the given namedQueryFilterStr is null or blank.
+     */
+    public EthosResponse getWithNamedQueryFilter( String resourceName, String version, String namedQueryFilterStr, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithNamedQueryFilter( resourceName, version, namedQueryFilterStr );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
+     * Gets a page of data for the given resource with the given named query filter.  Uses the default version of the resource.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param namedQueryFilterStr The string resource filter in JSON format contained in the URL, e.g: <pre>?criteria={"names":[{"firstName":"John"}]}</pre>
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException Thrown if the resourceName or namedQueryFilterStr is null or blank.
+     */
+    public EthosResponse getWithNamedQueryFilter( String resourceName, String namedQueryFilterStr, Class classType ) throws IOException {
+        return getWithNamedQueryFilter( resourceName, DEFAULT_VERSION, namedQueryFilterStr, classType );
+    }
 
     /**
      * Gets a page of data for the given resource by name with the given filter.  Uses the default version of the resource.
@@ -157,6 +231,47 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
+     * Gets a page of data for the given resource by name and version with the given filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException If the given criteriaFilter is null.
+     */
+    public EthosResponse getWithCriteriaFilter(String resourceName, String version, CriteriaFilter criteriaFilter, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithCriteriaFilter( resourceName, version, criteriaFilter );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
+     * Gets a page of data for the given resource by name with the given filter.  Uses the default version of the resource.
+     * Makes a non-filter API request if the given criteriaFilter is null.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithCriteriaFilter(String resourceName, CriteriaFilter criteriaFilter, Class classType ) throws IOException {
+        return getWithCriteriaFilter( resourceName, DEFAULT_VERSION, criteriaFilter, classType );
+    }
+
+    /**
      * Gets a page of data for the given resource by name with the given named query filter.  Uses the default version of the resource.
      * Makes a non-filter API request if the given namedQueryFilter is null.
      * @param resourceName The name of the resource to get data for.
@@ -188,6 +303,47 @@ public class EthosFilterQueryClient extends EthosProxyClient {
             throw new IllegalArgumentException( String.format("Error: Cannot get resource \"%s\" with named query filter due to a null named query filter reference.", resourceName) );
         }
         return getWithNamedQueryFilter( resourceName, version, namedQueryFilter.toString() );
+    }
+
+    /**
+     * Gets a page of data for the given resource by name and version with the given named query filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                         A simple call to namedQueryFilter.toString() should output the named query filter portion of the request URL,
+     *                         e.g: <code>?instructor={"instructor": {"id": "11111111-1111-1111-1111-111111111111"}}"</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @throws IllegalArgumentException If the given namedQueryFilter is null.
+     */
+    public EthosResponse getWithNamedQueryFilter(String resourceName, String version, NamedQueryFilter namedQueryFilter, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithNamedQueryFilter( resourceName, version, namedQueryFilter );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
+     * Gets a page of data for the given resource by name with the given named query filter.  Uses the default version of the resource.
+     * Makes a non-filter API request if the given namedQueryFilter is null.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                       A simple call to namedQueryFilter.toString() should output the named query filter portion of the request URL,
+     *                       e.g: <code>?instructor={"instructor": {"id": "11111111-1111-1111-1111-111111111111"}}"</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return An <code>EthosResponse</code> containing an initial page (EthosResponse content) of resource data according
+     * to the requested version and filter of the resource.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithNamedQueryFilter(String resourceName, NamedQueryFilter namedQueryFilter, Class classType ) throws IOException {
+        return getWithNamedQueryFilter( resourceName, DEFAULT_VERSION, namedQueryFilter, classType );
     }
 
     /**
@@ -236,6 +392,57 @@ public class EthosFilterQueryClient extends EthosProxyClient {
                                         .withSimpleCriteria(criteriaKey, criteriaValue)
                                         .buildCriteriaFilter();
         return getWithCriteriaFilter( resourceName, version, criteriaFilter );
+    }
+
+    /**
+     * Convenience method to submit a GET request with a single set of criteria filter for a SimpleCriteria.  This is intended only to be used
+     * for a single set of criteria filter, e.g: <code>?criteria={"lastName":"Smith"}</code>, where <b>firstName</b> is the criteriaKey,
+     * and <b>John</b> is the criteriaValue.  Requests requiring a more complex criteria filter should first build the CriteriaFilter
+     * with the necessary criteria, and then call <code>getWithCriteriaFilter(resourceName, version, criteriaFilter)</code>.
+     * <p>
+     * The parameters criteriaKey and criteriaValue should only specify the values within quotes of the
+     * JSON filter syntax.  No JSON syntax (square or squirly brackets, etc) should be contained within those parameter values.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaKey The JSON label key for the criteria.
+     * @param criteriaValue The value associated with the criteriaKey.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @return An EthosResponse containing a page of data for the given resource criteria filter GET request.
+     */
+    public EthosResponse getWithSimpleCriteriaValues(String resourceName, String version, String criteriaKey, String criteriaValue, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithSimpleCriteriaValues( resourceName, version, criteriaKey, criteriaValue );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
+     * Convenience method to submit a GET request with a single set of criteria filter for a SimpleCriteria.  This is intended only to be used
+     * for a single set of criteria filter, e.g: <code>?criteria={"lastName":"Smith"}</code>, where <b>firstName</b> is the criteriaKey,
+     * and <b>John</b> is the criteriaValue.  Requests requiring a more complex criteria filter should first build the CriteriaFilter
+     * with the necessary criteria, and then call <code>getWithCriteriaFilter(resourceName, version, criteriaFilter)</code>.
+     * <p>
+     * The parameters criteriaKey and criteriaValue should only specify the values within quotes of the
+     * JSON filter syntax.  No JSON syntax (square or squirly brackets, etc) should be contained within those parameter values.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * <p>
+     * Uses the default version of the resource.
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaKey The JSON label key for the criteria.
+     * @param criteriaValue The value associated with the criteriaKey.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @return An EthosResponse containing a page of data for the given resource criteria filter GET request.
+     */
+    public EthosResponse getWithSimpleCriteriaValues(String resourceName, String criteriaKey, String criteriaValue, Class classType ) throws IOException {
+        return getWithSimpleCriteriaValues( resourceName, DEFAULT_VERSION, criteriaKey, criteriaValue, classType );
     }
 
     /**
@@ -298,6 +505,65 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
+     * Convenience method to submit a GET request with a single set of criteria filter for a SimpleCriteriaObject.  This is intended only to be used
+     * for a single set of criteria filter, e.g: <code>?criteria={"names":{"lastName":"Smith"}}</code>, where <b>names</b> is the
+     * criteriaLabel, <b>firstName</b> is the criteriaKey, and <b>John</b> is the criteriaValue.  Requests requiring
+     * a more complex criteria filter should first build the CriteriaFilter with the necessary criteria, and then call
+     * <code>getWithCriteriaFilter(resourceName, version, criteriaFilter)</code>.
+     * <p>
+     * The parameters criteriaLabel, criteriaKey, and criteriaValue should only specify the values within quotes of the
+     * JSON filter syntax.  No JSON syntax (square or squirly brackets, etc) should be contained within those parameter values.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaLabel The label of the criteria that the given criteriaKey and criteriaValue are associated with,
+     *                      e.g: "<b>names</b>":{"firstName":"John"}, where <b>names</b> is the criteriaLabel associated with the
+     *                      criteriaKey (firstName) and criteriaValue (John).
+     * @param criteriaKey The JSON label key for the criteria.
+     * @param criteriaValue The value associated with the criteriaKey.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @return An EthosResponse containing a page of data for the given resource criteria filter GET request.
+     */
+    public EthosResponse getWithSimpleCriteriaObjectValues(String resourceName, String version, String criteriaLabel, String criteriaKey, String criteriaValue, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithSimpleCriteriaObjectValues( resourceName, version, criteriaLabel, criteriaKey, criteriaValue );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
+     * Convenience method to submit a GET request with a single set of criteria filter for a SimpleCriteriaObject.  This is intended only to be used
+     * for a single set of criteria filter, e.g: <code>?criteria={"names":{"lastName":"Smith"}}</code>, where <b>names</b> is the
+     * criteriaLabel, <b>firstName</b> is the criteriaKey, and <b>John</b> is the criteriaValue.  Requests requiring
+     * a more complex criteria filter should first build the CriteriaFilter with the necessary criteria, and then call
+     * <code>getWithCriteriaFilter(resourceName, criteriaFilter)</code>.
+     * <p>
+     * The parameters criteriaLabel, criteriaKey, and criteriaValue should only specify the values within quotes of the
+     * JSON filter syntax.  No JSON syntax (square or squirly brackets, etc) should be contained within those parameter values.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * <p>
+     * Uses the default version of the resource.
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaLabel The label of the criteria set that the given criteriaKey and criteriaValue are associated with,
+     *                      e.g: "<b>names</b>":{"firstName":"John"}, where <b>names</b> is the criteriaLabel associated to the
+     *                      criteriaKey (firstName) and criteriaValue (John).
+     * @param criteriaKey The JSON label key for the criteria.
+     * @param criteriaValue The value associated with the criteriaKey.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @return An EthosResponse containing a page of data for the given resource criteria filter GET request.
+     */
+    public EthosResponse getWithSimpleCriteriaObjectValues(String resourceName, String criteriaLabel, String criteriaKey, String criteriaValue, Class classType ) throws IOException {
+        return getWithSimpleCriteriaObjectValues( resourceName, DEFAULT_VERSION, criteriaLabel, criteriaKey, criteriaValue, classType );
+    }
+
+    /**
      * Convenience method to submit a GET request with a single set of criteria filter for a SimpleCriteriaArray.  This is intended only to be used
      * for a single set of criteria filter, e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>, where <b>names</b> is the
      * criteriaLabel, <b>firstName</b> is the criteriaKey, and <b>John</b> is the criteriaValue.  Requests requiring
@@ -357,6 +623,65 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
+     * Convenience method to submit a GET request with a single set of criteria filter for a SimpleCriteriaArray.  This is intended only to be used
+     * for a single set of criteria filter, e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>, where <b>names</b> is the
+     * criteriaLabel, <b>firstName</b> is the criteriaKey, and <b>John</b> is the criteriaValue.  Requests requiring
+     * a more complex criteria filter should first build the CriteriaFilter with the necessary criteria, and then call
+     * <code>getWithCriteriaFilter(resourceName, version, criteriaFilter)</code>.
+     * <p>
+     * The parameters criteriaLabel, criteriaKey, and criteriaValue should only specify the values within quotes of the
+     * JSON filter syntax.  No JSON syntax (square or squirly brackets, etc) should be contained within those parameter values.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaLabel The label of the criteria that the given criteriaKey and criteriaValue are associated with,
+     *                      e.g: "{<b>names</b>":[{"firstName":"John"}]}, where <b>names</b> is the criteriaLabel associated with the
+     *                      criteriaKey (firstName) and criteriaValue (John).
+     * @param criteriaKey The JSON label key for the criteria.
+     * @param criteriaValue The value associated with the criteriaKey.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @return An EthosResponse containing a page of data for the given resource criteria filter GET request.
+     */
+    public EthosResponse getWithSimpleCriteriaArrayValues(String resourceName, String version, String criteriaLabel, String criteriaKey, String criteriaValue, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithSimpleCriteriaArrayValues( resourceName, version, criteriaLabel, criteriaKey, criteriaValue );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+    /**
+     * Convenience method to submit a GET request with a single set of criteria filter for a SimpleCriteriaArray.  This is intended only to be used
+     * for a single set of criteria filter, e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>, where <b>names</b> is the
+     * criteriaLabel, <b>firstName</b> is the criteriaKey, and <b>John</b> is the criteriaValue.  Requests requiring
+     * a more complex criteria filter should first build the CriteriaFilter with the necessary criteria, and then call
+     * <code>getWithCriteriaFilter(resourceName, criteriaFilter)</code>.
+     * <p>
+     * The parameters criteriaLabel, criteriaKey, and criteriaValue should only specify the values within quotes of the
+     * JSON filter syntax.  No JSON syntax (square or squirly brackets, etc) should be contained within those parameter values.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * <p>
+     * Uses the default version of the resource.
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaLabel The label of the criteria set that the given criteriaKey and criteriaValue are associated with,
+     *                      e.g: {<b>names</b>":[{"firstName":"John"}]}, where <b>names</b> is the criteriaLabel associated to the
+     *                      criteriaKey (firstName) and criteriaValue (John).
+     * @param criteriaKey The JSON label key for the criteria.
+     * @param criteriaValue The value associated with the criteriaKey.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @return An EthosResponse containing a page of data for the given resource criteria filter GET request.
+     */
+    public EthosResponse getWithSimpleCriteriaArrayValues(String resourceName, String criteriaLabel, String criteriaKey, String criteriaValue, Class classType ) throws IOException {
+        return getWithSimpleCriteriaArrayValues( resourceName, DEFAULT_VERSION, criteriaLabel, criteriaKey, criteriaValue, classType );
+    }
+
+    /**
      * Submits a GET request for the given resource and version using the given filterMapStr.  The filterMapStr
      * is intended to support the filter syntax for resources versions 7 and older.  An example of a filterMapStr is:
      * <code>?firstName=James</code>.
@@ -381,7 +706,6 @@ public class EthosFilterQueryClient extends EthosProxyClient {
         return response;
     }
 
-
     /**
      * Submits a GET request for the given resource and version using the given filterMap.  The filterMap
      * is intended to support the filter syntax for resources versions 7 and older.  A FilterMap contains a map of
@@ -403,6 +727,135 @@ public class EthosFilterQueryClient extends EthosProxyClient {
         return getWithFilterMap( resourceName, version, filterMap.toString() );
     }
 
+    /**
+     * Submits a GET request for the given resource and version using the given filterMapStr.  The filterMapStr
+     * is intended to support the filter syntax for resources versions 7 and older.  An example of a filterMapStr is:
+     * <code>?firstName=James</code>.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * <p>
+     * This is NOT intended to be used for resource versions after version 7 and/or for criteria filters.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request,
+     *                supporting only version 7 or older.
+     * @param filterMapStr A string containing the filter syntax used for request URL filters with resource versions 7 or older.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @return An EthosResponse containing a page of data for the given resource filter map GET request.
+     */
+    public EthosResponse getWithFilterMap( String resourceName, String version, String filterMapStr, Class classType ) throws IOException {
+        EthosResponse ethosResponse = getWithFilterMap( resourceName, version, filterMapStr );
+        if( classType != null ) {
+            ethosResponse = convertResponseContentToTypedList( ethosResponse, classType );
+        }
+        return ethosResponse;
+    }
+
+
+    /**
+     * Submits a GET request for the given resource and version using the given filterMap.  The filterMap
+     * is intended to support the filter syntax for resources versions 7 and older.  A FilterMap contains a map of
+     * one or many filter parameter pair(s).  An example of a filterMap string indicating the contents of the map is:
+     * <code>?firstName=James</code>.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * <p>
+     * This is NOT intended to be used for resource versions after version 7 and/or for criteria filters.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request,
+     *                supporting only version 7 or older.
+     * @param filterMap A string containing the filter syntax used for request URL filters with resource versions 7 or older.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     * @return An EthosResponse containing a page of data for the given resource filter map GET request.
+     */
+    public EthosResponse getWithFilterMap( String resourceName, String version, FilterMap filterMap, Class classType ) throws IOException {
+        return getWithFilterMap( resourceName, version, filterMap.toString(), classType );
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param requestBody The QAPI request body for this POST request, as a JSON formatted string.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, String version, String requestBody ) throws IOException {
+        if( resourceName == null || resourceName.isBlank() ) {
+            throw new IllegalArgumentException("Error: Cannot get resource with QAPI request due to a null or blank resource name." );
+        }
+        Map<String,String> headers = buildHeadersMap( version );
+        EthosResponse response = post( EthosIntegrationUrls.qapis(getRegion(), resourceName), headers, requestBody );
+        return response;
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param requestBody The QAPI request body for this POST request, as a JSON formatted string.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, String requestBody ) throws IOException {
+        return getWithQAPI( resourceName, DEFAULT_VERSION, requestBody );
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.  The request body is a JsonNode.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param requestBodyNode The QAPI request body for this POST request, as a JsonNode.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, String version, JsonNode requestBodyNode ) throws IOException {
+        if( requestBodyNode == null ) {
+            throw new IllegalArgumentException( String.format("Error: Cannot submit a QAPI POST request for resourceName \"%s\" due to a null requestBody JsonNode param.", resourceName) );
+        }
+        return getWithQAPI( resourceName, version, requestBodyNode.toString() );
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.  The request body is a JsonNode.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param requestBodyNode The QAPI request body for this POST request, as a JsonNode.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, JsonNode requestBodyNode ) throws IOException {
+        return getWithQAPI( resourceName, DEFAULT_VERSION, requestBodyNode );
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.  The request body is a generic type object from the generated SDK object library.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param genericTypeBody A generic type object representing the QAPI POST request body.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, String version, T genericTypeBody ) throws IOException {
+        if( genericTypeBody == null ) {
+            throw new IllegalArgumentException( String.format("Error: Cannot submit a QAPI POST request for resourceName \"%s\" and version \"%s\" due to a null generic type request body param.", resourceName, version) );
+        }
+        String jsonStr = ethosRequestConverter.toJsonString( genericTypeBody );
+        return getWithQAPI( resourceName, version, jsonStr );
+    }
+
+    /**
+     * Submits a QAPI POST request to filter by the request body.  The request body is a generic type object from the generated SDK object library.
+     * Uses the default version.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param genericTypeBody A generic type object representing the QAPI POST request body.
+     * @return An EthosResponse containing a page of data for the given resource QAPI POST request.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public EthosResponse getWithQAPI( String resourceName, T genericTypeBody ) throws IOException {
+        return getWithQAPI( resourceName, DEFAULT_VERSION, genericTypeBody );
+    }
 
     /**
      * Gets all the pages for a given resource using the specified criteria filter.  Uses the default version of the resource,
@@ -465,6 +918,87 @@ public class EthosFilterQueryClient extends EthosProxyClient {
      */
     public List<EthosResponse> getPagesWithCriteriaFilter( String resourceName, String version, CriteriaFilter criteriaFilter, int pageSize ) throws IOException {
         return getPagesFromOffsetWithCriteriaFilter( resourceName, version, criteriaFilter, pageSize, 0 );
+    }
+
+    /**
+     * Gets all the pages for a given resource using the specified criteria filter.  Uses the default version of the resource,
+     * and the page size is derived from the length of the returned response of the request using the criteria filter (default page size).
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithCriteriaFilter( String resourceName, CriteriaFilter criteriaFilter, Class classType ) throws IOException {
+        return getPagesWithCriteriaFilter( resourceName, DEFAULT_VERSION, criteriaFilter, DEFAULT_PAGE_SIZE, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource using the specified criteria filter for the given version.  Uses the default
+     * page size, which is the length of the returned response of the request using the criteria filter.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithCriteriaFilter( String resourceName, String version, CriteriaFilter criteriaFilter, Class classType ) throws IOException {
+        return getPagesWithCriteriaFilter( resourceName, version, criteriaFilter, DEFAULT_PAGE_SIZE, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource using the specified criteria filter and page size.  The default version
+     * of the resource is used.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithCriteriaFilter( String resourceName, CriteriaFilter criteriaFilter, int pageSize, Class classType ) throws IOException {
+        return getPagesWithCriteriaFilter( resourceName, DEFAULT_VERSION, criteriaFilter, pageSize, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource using the specified criteria filter and page size for the given version.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithCriteriaFilter( String resourceName, String version, CriteriaFilter criteriaFilter, int pageSize, Class classType ) throws IOException {
+        List<EthosResponse> ethosResponseList = getPagesWithCriteriaFilter( resourceName, version, criteriaFilter, pageSize );
+        if( classType != null ) {
+            ethosResponseList = convertResponsesContentToTypedList( ethosResponseList, classType );
+        }
+        return ethosResponseList;
     }
 
     /**
@@ -561,6 +1095,91 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
+     * Gets all the pages for a given resource beginning at the given offset index, using the specified criteria filter
+     * and page size for the given version.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithCriteriaFilter( String resourceName, String version, CriteriaFilter criteriaFilter, int pageSize, int offset, Class classType ) throws IOException {
+        List<EthosResponse> ethosResponseList = getPagesFromOffsetWithCriteriaFilter( resourceName, version, criteriaFilter, pageSize, offset );
+        if( classType != null ) {
+            ethosResponseList = convertResponsesContentToTypedList( ethosResponseList, classType );
+        }
+        return ethosResponseList;
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at the given offset index, using the specified criteria filter.
+     * The page size is determined to be the length of the returned response of the request using the criteria filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * The default version of the resource is used.
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithCriteriaFilter( String resourceName, CriteriaFilter criteriaFilter, int offset, Class classType ) throws IOException {
+        return getPagesFromOffsetWithCriteriaFilter( resourceName, DEFAULT_VERSION, criteriaFilter, offset, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at the given offset index, using the specified criteria filter
+     * for the given version.  The page size is determined to be the length of the returned response of the request using
+     * the criteria filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithCriteriaFilter( String resourceName, String version, CriteriaFilter criteriaFilter, int offset, Class classType ) throws IOException {
+        return getPagesFromOffsetWithCriteriaFilter( resourceName, version, criteriaFilter, DEFAULT_PAGE_SIZE, offset, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at the given offset index, using the specified criteria filter
+     * and page size for the given version.  The default version of the resource is used.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param criteriaFilter A previously built CriteriaFilter containing the filter criteria used in the request URL.
+     *                       A simple call to criteriaFilter.toString() should output the criteria filter portion of the request URL,
+     *                       e.g: <code>?criteria={"names":[{"firstName":"John"}]}</code>.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithCriteriaFilter( String resourceName, CriteriaFilter criteriaFilter, int pageSize, int offset, Class classType ) throws IOException {
+        return getPagesFromOffsetWithCriteriaFilter( resourceName, DEFAULT_VERSION, criteriaFilter, pageSize, offset, classType );
+    }
+
+    /**
      * Gets all the pages for a given resource using the specified named query filter.  Uses the default version of the resource,
      * and the page size is derived from the length of the returned response of the request using the named query filter.
      * @param resourceName The name of the resource to get data for.
@@ -621,6 +1240,84 @@ public class EthosFilterQueryClient extends EthosProxyClient {
      */
     public List<EthosResponse> getPagesWithNamedQueryFilter( String resourceName, String version, NamedQueryFilter namedQueryFilter, int pageSize ) throws IOException {
         return getPagesFromOffsetWithNamedQueryFilter( resourceName, version, namedQueryFilter, pageSize, 0 );
+    }
+
+    /**
+     * Gets all the pages for a given resource using the specified named query filter.  Uses the default version of the resource,
+     * and the page size is derived from the length of the returned response of the request using the named query filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                         A simple call to namedQueryFilter.toString() should output the filter portion of the request URL,
+     *                         e.g: <code>?keywordSearch={"keywordSearch": "someKeyword"}</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithNamedQueryFilter( String resourceName, NamedQueryFilter namedQueryFilter, Class classType ) throws IOException {
+        return getPagesWithNamedQueryFilter( resourceName, DEFAULT_VERSION, namedQueryFilter, DEFAULT_PAGE_SIZE, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource using the specified named query filter for the given version.  Uses the default
+     * page size, which is the length of the returned response of the request using the named query filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                         A simple call to namedQueryFilter.toString() should output the filter portion of the request URL,
+     *                         e.g: <code>?keywordSearch={"keywordSearch": "someKeyword"}</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithNamedQueryFilter( String resourceName, String version, NamedQueryFilter namedQueryFilter, Class classType ) throws IOException {
+        return getPagesWithNamedQueryFilter( resourceName, version, namedQueryFilter, DEFAULT_PAGE_SIZE, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource using the specified named query filter and page size.  The default version
+     * of the resource is used.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                         A simple call to namedQueryFilter.toString() should output the filter portion of the request URL,
+     *                         e.g: <code>?keywordSearch={"keywordSearch": "someKeyword"}</code>.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithNamedQueryFilter( String resourceName, NamedQueryFilter namedQueryFilter, int pageSize, Class classType ) throws IOException {
+        return getPagesWithNamedQueryFilter( resourceName, DEFAULT_VERSION, namedQueryFilter, pageSize, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource using the specified named query filter and page size for the given version.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                         A simple call to namedQueryFilter.toString() should output the filter portion of the request URL,
+     *                         e.g: <code>?keywordSearch={"keywordSearch": "someKeyword"}</code>.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithNamedQueryFilter( String resourceName, String version, NamedQueryFilter namedQueryFilter, int pageSize, Class classType ) throws IOException {
+        List<EthosResponse> ethosResponseList = getPagesWithNamedQueryFilter( resourceName, version, namedQueryFilter, pageSize );
+        if( classType != null ) {
+            ethosResponseList = convertResponsesContentToTypedList( ethosResponseList, classType );
+        }
+        return ethosResponseList;
     }
 
     /**
@@ -715,6 +1412,91 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
+     * Gets all the pages for a given resource beginning at the given offset index, using the specified named query filter
+     * and page size for the given version.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                         A simple call to namedQueryFilter.toString() should output the filter portion of the request URL,
+     *                         e.g: <code>?keywordSearch={"keywordSearch": "someKeyword"}</code>.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithNamedQueryFilter( String resourceName, String version, NamedQueryFilter namedQueryFilter, int pageSize, int offset, Class classType ) throws IOException {
+        List<EthosResponse> ethosResponseList = getPagesFromOffsetWithNamedQueryFilter( resourceName, version, namedQueryFilter, pageSize, offset );
+        if( classType != null ) {
+            ethosResponseList = convertResponsesContentToTypedList( ethosResponseList, classType );
+        }
+        return ethosResponseList;
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at the given offset index, using the specified named query filter.
+     * The page size is determined to be the length of the returned response of the request using the named query filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * The default version of the resource is used.
+     * @param resourceName The name of the resource to get data for.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                         A simple call to namedQueryFilter.toString() should output the filter portion of the request URL,
+     *                         e.g: <code>?keywordSearch={"keywordSearch": "someKeyword"}</code>.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithNamedQueryFilter( String resourceName, NamedQueryFilter namedQueryFilter, int offset, Class classType ) throws IOException {
+        return getPagesFromOffsetWithNamedQueryFilter( resourceName, DEFAULT_VERSION, namedQueryFilter, offset, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at the given offset index, using the specified named query filter
+     * for the given version.  The page size is determined to be the length of the returned response of the request using
+     * the named query filter.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                         A simple call to namedQueryFilter.toString() should output the filter portion of the request URL,
+     *                         e.g: <code>?keywordSearch={"keywordSearch": "someKeyword"}</code>.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithNamedQueryFilter(String resourceName, String version, NamedQueryFilter namedQueryFilter, int offset, Class classType ) throws IOException {
+        return getPagesFromOffsetWithNamedQueryFilter( resourceName, version, namedQueryFilter, DEFAULT_PAGE_SIZE, offset, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at the given offset index, using the specified named query filter
+     * and page size for the given version.  The default version of the resource is used.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param namedQueryFilter A previously built NamedQueryFilter containing the filter criteria used in the request URL.
+     *                         A simple call to namedQueryFilter.toString() should output the criteria filter portion of the request URL,
+     *                         e.g: <code>?keywordSearch={"keywordSearch": "someKeyword"}</code>.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithNamedQueryFilter( String resourceName, NamedQueryFilter namedQueryFilter, int pageSize, int offset, Class classType ) throws IOException {
+        return getPagesFromOffsetWithNamedQueryFilter( resourceName, DEFAULT_VERSION, namedQueryFilter, pageSize, offset, classType );
+    }
+
+    /**
      * Gets all the pages for a given resource using the specified filter map and page size for the given version.
      * @param resourceName The name of the resource to get data for.
      * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
@@ -746,6 +1528,43 @@ public class EthosFilterQueryClient extends EthosProxyClient {
         return getPagesFromOffsetWithFilterMap( resourceName, version, filterMap, pageSize, 0 );
     }
 
+    /**
+     * Gets all the pages for a given resource using the specified filter map and page size for the given version.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param filterMap A previously built FilterMap containing the filter parameters used in the request URL.
+     *                  A simple call to filterMap.toString() should output the criteria filter portion of the request URL,
+     *                  e.g: <code>?firstName=John&amp;lastName=Smith</code>.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithFilterMap( String resourceName, String version, FilterMap filterMap, Class classType ) throws IOException {
+        return getPagesWithFilterMap( resourceName, version, filterMap, DEFAULT_PAGE_SIZE, classType );
+    }
+
+    /**
+     * Gets all the pages for a given resource using the specified filter map and page size for the given version.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param filterMap A previously built FilterMap containing the filter parameters used in the request URL.
+     *                  A simple call to filterMap.toString() should output the criteria filter portion of the request URL,
+     *                  e.g: <code>?firstName=John&amp;lastName=Smith</code>.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithFilterMap( String resourceName, String version, FilterMap filterMap, int pageSize, Class classType ) throws IOException {
+        return getPagesFromOffsetWithFilterMap( resourceName, version, filterMap, pageSize, 0, classType );
+    }
 
     /**
      * Gets all the pages for a given resource beginning at the given offset index, using the specified filter map and
@@ -806,7 +1625,303 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
-     * Gets the total count of resources available using the given criteriaFilter.
+     * Gets all the pages for a given resource beginning at the given offset index, using the specified filter map and
+     * page size for the given version.  The page size is determined to be the length of the returned response of the request using
+     * the filter map.
+     * The response body is returned within the EthosResponse as a list of objects of the given class type.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param filterMap A previously built FilterMap containing the filter parameters used in the request URL.
+     *                  A simple call to filterMap.toString() should output the criteria filter portion of the request URL,
+     *                  e.g: <code>?firstName=John&amp;lastName=Smith</code>.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithFilterMap( String resourceName, String version, FilterMap filterMap, int offset, Class classType ) throws IOException {
+        return getPagesFromOffsetWithFilterMap( resourceName, version, filterMap, DEFAULT_PAGE_SIZE, offset, classType );
+    }
+
+
+    /**
+     * Gets all the pages for a given resource beginning at the given offset index, using the specified filter map and
+     * page size for the given version.
+     * <p>
+     * The response body is returned within the EthosResponse as a list of objects of the given class type, if the classType
+     * is not null.  If the classType is null, the returned EthosResponse will not contain a generic type object response body,
+     * but only a JSON formatted string response body.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param filterMap A previously built FilterMap containing the filter parameters used in the request URL.
+     *                  A simple call to filterMap.toString() should output the criteria filter portion of the request URL,
+     *                  e.g: <code>?firstName=John&amp;lastName=Smith</code>.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param classType The class of the generic type object containing the response body to return within the EthosResponse.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithFilterMap( String resourceName, String version, FilterMap filterMap, int pageSize, int offset, Class classType ) throws IOException {
+        List<EthosResponse> ethosResponseList = getPagesFromOffsetWithFilterMap( resourceName, version, filterMap, pageSize, offset );
+        if( classType != null ) {
+            ethosResponseList = convertResponsesContentToTypedList( ethosResponseList, classType );
+        }
+        return ethosResponseList;
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody JSON formatted string for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, String qapiRequestBody, int pageSize, int offset ) throws IOException {
+        if( resourceName == null || resourceName.isBlank() ) {
+            throw new IllegalArgumentException("Error: Cannot get pages of resource with QAPI due to a null or blank resource name." );
+        }
+        if( qapiRequestBody == null || qapiRequestBody.isBlank() ) {
+            throw new IllegalArgumentException("Error: Cannot get pages of resource with QAPI due to a null or blank QAPI request body." );
+        }
+        List<EthosResponse> ethosResponseList = new ArrayList<>();
+        Pager pager = new Pager.Builder(resourceName)
+                .forVersion(version)
+                .withQAPIRequestBodyFilter(qapiRequestBody)
+                .withPageSize(pageSize)
+                .fromOffset(offset)
+                .build();
+        pager = prepareForPaging( pager );
+        pager = shouldDoPaging( pager, false );
+        if( pager.isShouldDoPaging() ) {
+            ethosResponseList = doPagingFromOffsetForQAPI( pager.getResourceName(), pager.getVersion(), qapiRequestBody, pager.getTotalCount(), pager.getPageSize(), pager.getOffset() );
+        }
+        else {
+            ethosResponseList.add( getWithQAPI(resourceName, version, qapiRequestBody) );
+        }
+        return ethosResponseList;
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody JSON formatted string for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, String qapiRequestBody, int pageSize ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBody, pageSize, 0 );
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param qapiRequestBody JSON formatted string for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, int offset, String qapiRequestBody ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBody, DEFAULT_PAGE_SIZE, offset );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody JSON formatted string for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, String qapiRequestBody ) throws IOException {
+        return getPagesWithQAPI( resourceName, version, qapiRequestBody, DEFAULT_PAGE_SIZE );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body.
+     * Uses the default page size and default version.
+     * @param resourceName The name of the resource to get data for.
+     * @param qapiRequestBody JSON formatted string for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String qapiRequestBody ) throws IOException {
+        return getPagesWithQAPI( resourceName, DEFAULT_VERSION, qapiRequestBody );
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBodyNode JsonNode for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, JsonNode qapiRequestBodyNode, int pageSize, int offset ) throws IOException {
+        if( qapiRequestBodyNode == null ) {
+            throw new IllegalArgumentException("Error: Cannot get pages of resource with QAPI due to a null request body JsonNode." );
+        }
+        String qapiRequestBodyStr = qapiRequestBodyNode.toString();
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBodyStr, pageSize, offset );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBodyNode JSON formatted string for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, JsonNode qapiRequestBodyNode, int pageSize ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBodyNode, pageSize, 0 );
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param qapiRequestBodyNode JsonNode for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, int offset, JsonNode qapiRequestBodyNode ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBodyNode, DEFAULT_PAGE_SIZE, offset );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBodyNode JsonNode for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, JsonNode qapiRequestBodyNode ) throws IOException {
+        return getPagesWithQAPI( resourceName, version, qapiRequestBodyNode, DEFAULT_PAGE_SIZE );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body.
+     * Uses the default page size and default version.
+     * @param resourceName The name of the resource to get data for.
+     * @param qapiRequestBodyNode JsonNode for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, JsonNode qapiRequestBodyNode ) throws IOException {
+        return getPagesWithQAPI( resourceName, DEFAULT_VERSION, qapiRequestBodyNode );
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody generic object type for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, T qapiRequestBody, int pageSize, int offset ) throws IOException {
+        if( qapiRequestBody == null ) {
+            throw new IllegalArgumentException("Error: Cannot get pages of resource with QAPI due to a null request body generic object type." );
+        }
+        String qapiRequestBodyStr = ethosRequestConverter.toJsonString( qapiRequestBody );
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBodyStr, pageSize, offset );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body and
+     * page size for the given version.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody generic object type for the QAPI request body content.
+     * @param pageSize The size (number of rows) of each page returned in the list.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, T qapiRequestBody, int pageSize ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBody, pageSize, 0 );
+    }
+
+    /**
+     * Gets the pages for a given resource beginning at the given offset index, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @param qapiRequestBody generic object type for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesFromOffsetWithQAPI( String resourceName, String version, int offset, T qapiRequestBody ) throws IOException {
+        return getPagesFromOffsetWithQAPI( resourceName, version, qapiRequestBody, DEFAULT_PAGE_SIZE, offset );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body for the given version.
+     * Uses the default page size.
+     * @param resourceName The name of the resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody generic object type for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, String version, T qapiRequestBody ) throws IOException {
+        return getPagesWithQAPI( resourceName, version, qapiRequestBody, DEFAULT_PAGE_SIZE );
+    }
+
+    /**
+     * Gets all the pages for a given resource beginning at offset index 0, using the specified QAPI request body.
+     * Uses the default page size and default version.
+     * @param resourceName The name of the resource to get data for.
+     * @param qapiRequestBody generic object type for the QAPI request body content.
+     * @return A list of EthosResponses where each EthosResponse contains a page of data.  If paging is not required based on the
+     *         given pageSize and total count (from using the filter), the returned list will only contain one EthosResponse.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public List<EthosResponse> getPagesWithQAPI(String resourceName, T qapiRequestBody ) throws IOException {
+        return getPagesWithQAPI( resourceName, DEFAULT_VERSION, qapiRequestBody );
+    }
+
+    /**
+     * Gets the total count of resources available using the given criteriaFilter.  Uses the default version.
      * @param resourceName The name of the Ethos resource to get a total count for.
      * @param criteriaFilter The criteria filter to use when determining how many instances of the resource are available using that filter.
      * @return The number of resource instances available when making a GET request using the given criteriaFilter, or 0 if the
@@ -840,7 +1955,7 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
-     * Gets the total count of resources available using the given namedQueryFilter.
+     * Gets the total count of resources available using the given namedQueryFilter.  Uses the default version.
      * @param resourceName The name of the Ethos resource to get a total count for.
      * @param namedQueryFilter The named query filter to use when determining how many instances of the resource are available using that filter.
      * @return The number of resource instances available when making a GET request using the given namedQueryFilter, or 0 if the
@@ -873,6 +1988,18 @@ public class EthosFilterQueryClient extends EthosProxyClient {
     }
 
     /**
+     * Gets the total count of resources available using the given filterMap.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param filterMap The filter map to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, FilterMap filterMap ) throws IOException {
+        return getTotalCount( resourceName, DEFAULT_VERSION, filterMap );
+    }
+
+    /**
      * Gets the total count of resources available using the given filterMap.
      * @param resourceName The name of the Ethos resource to get a total count for.
      * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
@@ -893,6 +2020,104 @@ public class EthosFilterQueryClient extends EthosProxyClient {
         return Integer.valueOf( totalCount );
     }
 
+    /**
+     * Gets the total count of resources available using the given QAPI request body.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody The QAPI request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, String version, String qapiRequestBody ) throws IOException {
+        if( resourceName == null || resourceName.isBlank() ) {
+            return 0;
+        }
+        if( qapiRequestBody == null ) {
+            return 0;
+        }
+        EthosResponse ethosResponse = getWithQAPI( resourceName, version, qapiRequestBody );
+        String totalCount = getHeaderValue( ethosResponse, HDR_X_TOTAL_COUNT );
+        return Integer.valueOf( totalCount );
+    }
+
+    /**
+     * Gets the total count of resources available using the given QAPI request body.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param qapiRequestBody The QAPI request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, String qapiRequestBody ) throws IOException {
+        return getTotalCount( resourceName, DEFAULT_VERSION, qapiRequestBody );
+    }
+
+    /**
+     * Gets the total count of resources available using the given QAPI request body.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBodyNode The QAPI JsonNode request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, String version, JsonNode qapiRequestBodyNode ) throws IOException {
+        if( resourceName == null || resourceName.isBlank() ) {
+            return 0;
+        }
+        if( qapiRequestBodyNode == null ) {
+            return 0;
+        }
+        EthosResponse ethosResponse = getWithQAPI( resourceName, version, qapiRequestBodyNode );
+        String totalCount = getHeaderValue( ethosResponse, HDR_X_TOTAL_COUNT );
+        return Integer.valueOf( totalCount );
+    }
+
+    /**
+     * Gets the total count of resources available using the given QAPI request body.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param qapiRequestBodyNode The QAPI JsonNode request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, JsonNode qapiRequestBodyNode ) throws IOException {
+        return getTotalCount( resourceName, DEFAULT_VERSION, qapiRequestBodyNode );
+    }
+
+    /**
+     * Gets the total count of resources available using the given QAPI request body.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param qapiRequestBody The QAPI generic object type request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, String version, T qapiRequestBody ) throws IOException {
+        if( resourceName == null || resourceName.isBlank() ) {
+            return 0;
+        }
+        if( qapiRequestBody == null ) {
+            return 0;
+        }
+        EthosResponse ethosResponse = getWithQAPI( resourceName, version, qapiRequestBody );
+        String totalCount = getHeaderValue( ethosResponse, HDR_X_TOTAL_COUNT );
+        return Integer.valueOf( totalCount );
+    }
+
+    /**
+     * Gets the total count of resources available using the given QAPI request body.  Uses the default version.
+     * @param resourceName The name of the Ethos resource to get a total count for.
+     * @param qapiRequestBody The QAPI generic object type request body to use when determining how many instances of the resource are available using that filter.
+     * @return The number of resource instances available when making a GET request using the given filterMap, or 0 if the
+     *         given resourceName or filterMap is null.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    public int getTotalCount( String resourceName, T qapiRequestBody ) throws IOException {
+        return getTotalCount( resourceName, DEFAULT_VERSION, qapiRequestBody );
+    }
 
     /**
      * <p><b>Intended to be used internally within the SDK.</b>
@@ -961,6 +2186,10 @@ public class EthosFilterQueryClient extends EthosProxyClient {
             ethosResponse = getWithFilterMap( pager.getResourceName(), pager.getVersion(), pager.getFilterMap() );
             pager.setEthosResponse( ethosResponse );
         }
+        else if( pager.getQapiRequestBody() != null ) {
+            ethosResponse = getWithQAPI( pager.getResourceName(), pager.getVersion(), pager.getQapiRequestBody() );
+            pager.setEthosResponse( ethosResponse );
+        }
         else {
             super.prepareForPaging( pager ); // Call super.prepareForPaging() if no criteria filter, named query, or filter map is specified.
         }
@@ -992,7 +2221,7 @@ public class EthosFilterQueryClient extends EthosProxyClient {
             }
             // Set the pageSize from the response body length, if pageSize is <= DEFAULT_PAGE_SIZE.
             else if( pager.getEthosResponse().getContent() != null && pager.getEthosResponse().getContent().isBlank() == false ) {
-                int pageSize = pager.getEthosResponse().getContentAsJson().size();
+                int pageSize = ethosResponseConverter.toJsonNode(pager.getEthosResponse()).size();
                 pager.setPageSize( pageSize );
             }
             else {
@@ -1006,6 +2235,32 @@ public class EthosFilterQueryClient extends EthosProxyClient {
             }
         }
         return pager;
+    }
+
+    /**
+     * <p><b>Intended to be used internally within the SDK.</b></p>
+     * Performs paging calculations and operations for QAPI requests.
+     * @param resourceName The name of the Ethos resource to get data for.
+     * @param version The desired resource version header to use, as provided in the HTTP Accept Header of the request.
+     * @param requestBody The JSON formatted request body string.
+     * @param totalCount The total count of rows for the given resource.
+     * @param pageSize The number of rows to include in each page (EthosResponse) of the list returned.
+     * @param offset The 0 based index from which to begin paging for the given resource.
+     * @return A list of <code>EthosResponse</code>s where each <code>EthosResponse</code> in the list represents a page,
+     *         beginning from the given offset index.
+     * @throws IOException Propagates this exception if it occurs when making the call in the {@link EthosClient EthosClient}.
+     */
+    protected List<EthosResponse> doPagingFromOffsetForQAPI( String resourceName, String version, String requestBody, int totalCount, int pageSize, int offset ) throws IOException {
+        List<EthosResponse> ethosResponseList = new ArrayList();
+        Map<String,String> headers = buildHeadersMap( version );
+        double numPages = Math.ceil( (Double.valueOf(totalCount) - Double.valueOf(offset)) / Double.valueOf(pageSize) );
+        for( int i = 0; i < numPages; i++ ) {
+            String url = EthosIntegrationUrls.qapiPaging( getRegion(), resourceName, offset, pageSize );
+            EthosResponse response = post( url, headers, requestBody );
+            ethosResponseList.add( response );
+            offset += pageSize;
+        }
+        return ethosResponseList;
     }
 
     /**

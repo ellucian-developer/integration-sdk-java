@@ -1,6 +1,6 @@
 /*
  * ******************************************************************************
- *   Copyright  2020 Ellucian Company L.P. and its affiliates.
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
  * ******************************************************************************
  */
 package com.ellucian.ethos.integration.client.proxy;
@@ -10,7 +10,6 @@ import com.ellucian.ethos.integration.client.EthosResponseConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jackson.JsonLoader;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.ParseException;
@@ -37,6 +36,8 @@ class EthosProxyClientTest {
     // Attributes
     // ==========================================================================
     private EthosProxyClient spyEthosProxyClient;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     // ==========================================================================
     // Methods
@@ -212,7 +213,7 @@ class EthosProxyClientTest {
         EthosResponse expectedResponse = buildEthosResponse();
         String resourceName = "someResource";
         String version = "someVersion";
-        JsonNode requestBodyNode = JsonLoader.fromString("{\"jsonLabel\": \"jsonValue\"}");
+        JsonNode requestBodyNode = objectMapper.readTree("{\"jsonLabel\": \"jsonValue\"}");
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponse).when(spyEthosProxyClient).post(resourceName, version, requestBodyNode.toString() );
         // Run the test.
@@ -334,7 +335,7 @@ class EthosProxyClientTest {
         String resourceName = "someResource";
         String resourceId = "someResourceId";
         String version = "someVersion";
-        JsonNode requestBodyNode = JsonLoader.fromString("{\"jsonLabel\": \"jsonValue\"}");
+        JsonNode requestBodyNode = objectMapper.readTree("{\"jsonLabel\": \"jsonValue\"}");
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponse).when(spyEthosProxyClient).put(resourceName, resourceId, version, requestBodyNode.toString() );
         // Run the test.

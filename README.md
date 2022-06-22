@@ -1,8 +1,8 @@
 # Ellucian Ethos Integration SDK
 
-Ethos Integration SDK provides utilities and libraries that make it easier for developers to quickly start building Ethos-based integrations.
+Ethos Integration SDK (EISDK) provides utilities and libraries that make it easier for developers to quickly start building Ethos-based integrations.
 
-The Ethos Integration SDK for Java allows you to easily develop Java applications that integrate with Ellucian Ethos Integration. The SDK
+The EISDK for Java allows you to easily develop Java applications that integrate with Ellucian Ethos Integration. The SDK
 builds and executes HTTP requests and manages the responses. This allows your application to use the Java library methods to communicate
 with Ethos Integration, without the need to call the REST APIs directly.
 
@@ -121,15 +121,11 @@ have defined JSON schemas.  They return `EthosError` and `ChangeNotification` ob
 
 
 # Full API Documentation
-The full SDK API JavaDoc is hosted on our Github Pages site, located at (https://ellucianethos.github.io/integrationSDKDoc/java).
+The full EISDK JavaDoc is hosted on our [Github pages site](https://ellucian-developer.github.io/integration-sdk-doc/java/index.html).
 
 # Examples
-To view more examples, clone this repo and view the `com.ellucian.ethos.integration.sample.commandline` package.  Each of the 
-classes in that package has a static `main` method and can be run from the command line or with an IDE run command.  When 
-running these classes, an API key is required as a program argument.  
-
-For example:
-`java com.ellucian.ethos.integration.sample.commandline.EthosProxyClientExample "11111111-1111-1111-1111-111111111111"`
+The following are code-snippet examples of how to use the Ethos Integration SDK for Java.  For more in-depth examples 
+please refer to the [integration SDK Java example project](https://github.com/ellucian-developer/devexp-eijsdk-examples) in Github.
 
 ### Making Requests to the Proxy API
 
@@ -437,3 +433,61 @@ EthosResponse response = mainProxyClient.get("students");
 EthosMessagesClient mainMessagesClient = mainClientBuilder.buildMessagesClient();  
 List<ChangeNotification> cnList = mainMessagesClient.consume();  
 ```
+
+### Using the EISDK Generated Strongly Typed Object Library
+
+The EISDK Java object library provides request/response objects that can be used with the EISDK 
+when making requests.  This enables developers to work with Java objects rather than JSON data or JsonNode.
+
+Use the EISDK Java object library to get an API resource:
+
+```java
+String guid = "11111111-1111-1111-1111-111111111111";
+EthosResponse<StudentCohorts> ethosResponse = ethosProxyClient.getById("student-cohorts", guid, StudentCohorts.class);
+StudentCohorts studentCohorts = ethosResponse.getContentAsType();
+// Use getter methods to access properties on studentCohorts...
+System.out.println( "Title: " + studenCohorts.getTitle() );
+System.out.println( "Code: " + studenCohorts.getCode() );
+```
+Get a page of data using the EISDK Java object library:
+
+```java
+// Specify the JavaBean class for the resource
+EthosResponse<List<StudentCohorts>> ethosResponse = ethosProxyClient.get( "student-cohorts", StudentCohorts.class );
+// Get a list of StudentCohorts JavaBeans from the response.
+List<StudentCohorts> studentCohortsList = ethosResponse.getContentAsType();
+System.out.println( "******* doGetResourceAsJavaBeanExample() *******" );
+System.out.println(String.format("Get data for resource: %s", resourceName));
+System.out.println("getAsJavaBean() PAGE SIZE: " + studentCohortsList.size());
+for( StudentCohorts studentCohorts : studentCohortsList ) {
+    // We can more easily access the properties with getter methods on the StudentCohorts JavaBean, but to
+    // see the content just output toString().
+    System.out.println("getAsJavaBean() RESPONSE: " + studentCohorts.toString() );
+}
+```
+See the [EISDK Java object library](https://github.com/ellucian-developer/integration-sdk-java-objects) for more info.
+
+See the [EISDK Java object library Javadoc](https://github.com/ellucian-developer/integration-sdk-objects-java-doc) to access the Javadoc pages.
+
+### QAPI Support in the EISDK for Java
+
+Executing queries by QAPI requests is also supported.
+
+```java
+// Use a generated object for the QAPI request body.
+Persons persons = new Persons();
+Name name = new Name();
+name.setFirstName( "John" );
+name.setLastName( "Smith" );
+List<Name> nameList = new ArrayList<>();
+nameList.add( name );
+persons.setNames( nameList );
+// Make the QAPI request through the ethosFilterQueryClient.
+EthosResponse ethosResponse = ethosFilterQueryClient.getWithQAPI( resource, persons );
+JsonNode responseNode = ethosResponseConverter.toJsonNode( ethosResponse );
+System.out.println( "Number of resources returned: " + responseNode.size() );
+```
+
+### Examples Project
+
+More examples can be found in the [EISDK Java examples project](https://github.com/ellucian-developer/integration-sdk-java-examples).

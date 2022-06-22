@@ -1,6 +1,6 @@
 /*
  * ******************************************************************************
- *   Copyright  2020 Ellucian Company L.P. and its affiliates.
+ *   Copyright 2022 Ellucian Company L.P. and its affiliates.
  * ******************************************************************************
  */
 package com.ellucian.ethos.integration.client.proxy;
@@ -142,7 +142,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(promise).when(spyEthosProxyClientAsync).getAllPagesAsync( resourceName, EthosProxyClient.DEFAULT_PAGE_SIZE );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getAllPagesAsync( resourceName ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsync( resourceName );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesAsync(resourceName, EthosProxyClient.DEFAULT_PAGE_SIZE);
@@ -159,7 +161,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(promise).when(spyEthosProxyClientAsync).getAllPagesAsync( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getAllPagesAsync( resourceName, version ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsync( resourceName, version );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesAsync(resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE);
@@ -177,7 +181,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(promise).when(spyEthosProxyClientAsync).getAllPagesAsync( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getAllPagesAsync( resourceName, pageSize ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsync( resourceName, pageSize );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesAsync(resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize);
@@ -193,7 +199,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(promise).when(spyEthosProxyClientAsync).getAllPagesAsStringsAsync( resourceName, EthosProxyClient.DEFAULT_PAGE_SIZE );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getAllPagesAsStringsAsync( resourceName ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsStringsAsync( resourceName );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesAsStringsAsync(resourceName, EthosProxyClient.DEFAULT_PAGE_SIZE);
@@ -212,7 +220,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(promise).when(spyEthosProxyClientAsync).getAllPagesAsStringsAsync( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getAllPagesAsStringsAsync( resourceName, version ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsStringsAsync( resourceName, version );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesAsStringsAsync(resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE);
@@ -231,7 +241,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(promise).when(spyEthosProxyClientAsync).getAllPagesAsStringsAsync( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getAllPagesAsStringsAsync( resourceName, pageSize ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsStringsAsync( resourceName, pageSize );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesAsStringsAsync(resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize);
@@ -250,7 +262,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getAllPages( resourceName, version, pageSize );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getAllPagesAsStringsAsync( resourceName, version, pageSize ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsStringsAsync( resourceName, version, pageSize );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPages(resourceName, version, pageSize);
@@ -266,7 +280,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPages( anyString(), anyString(), anyInt() );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getAllPagesAsJsonNodesAsync( resourceName ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsJsonNodesAsync( resourceName );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPages(resourceName, EthosProxyClient.DEFAULT_VERSION, EthosProxyClient.DEFAULT_PAGE_SIZE);
@@ -283,7 +299,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPages( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getAllPagesAsJsonNodesAsync( resourceName, version ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsJsonNodesAsync( resourceName, version );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPages(resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE);
@@ -300,7 +318,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPages( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getAllPagesAsJsonNodesAsync( resourceName, pageSize ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsJsonNodesAsync( resourceName, pageSize );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPages(resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize);
@@ -318,7 +338,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPages( resourceName, version, pageSize );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getAllPagesAsJsonNodesAsync( resourceName, version, pageSize ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getAllPagesAsJsonNodesAsync( resourceName, version, pageSize );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPages(resourceName, version, pageSize);
@@ -335,7 +357,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, offset ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, offset );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(anyString(), anyString(), anyInt(), anyInt());
@@ -353,7 +377,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( resourceName, EthosProxyClient.DEFAULT_VERSION, offset, pageSize );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, offset, pageSize ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, offset, pageSize );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(resourceName, EthosProxyClient.DEFAULT_VERSION, offset, pageSize);
@@ -371,7 +397,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( resourceName, version, offset, EthosProxyClient.DEFAULT_PAGE_SIZE );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, version, offset ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, version, offset );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(resourceName, version, offset, EthosProxyClient.DEFAULT_PAGE_SIZE);
@@ -386,13 +414,16 @@ class EthosProxyClientAsyncTest {
         int pageSize = 17;
         int offset = 25;
         // Run the test with a null resourceName string.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, version, offset, pageSize ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, version, offset, pageSize );
+        List<EthosResponse> responseList = completableFuture.join();
+
         assertTrue( responseList != null );
         assertTrue( responseList.isEmpty() );
 
         // Run the test again with an empty resourceName string..
         resourceName = "";
-        responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, version, offset, pageSize ).join();
+        completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, version, offset, pageSize );
+        responseList = completableFuture.join();
         assertTrue( responseList != null );
         assertTrue( responseList.isEmpty() );
     }
@@ -408,7 +439,8 @@ class EthosProxyClientAsyncTest {
         // Return the pager when the method under test calls prepareForPaging() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPages(anyString(), anyString(), anyInt());
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, version, offset, pageSize ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, version, offset, pageSize );
+        List<EthosResponse> responseList = completableFuture.join();
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPages(resourceName, version, pageSize);
@@ -430,7 +462,9 @@ class EthosProxyClientAsyncTest {
                 resourceName, version, offset, pageSize
         );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, version, offset, pageSize ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsync( resourceName, version, offset, pageSize );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(
@@ -450,7 +484,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsStringsAsync( resourceName, offset ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsStringsAsync( resourceName, offset );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(anyString(), anyString(), anyInt(), anyInt());
@@ -469,7 +505,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( resourceName, EthosProxyClient.DEFAULT_VERSION, offset, pageSize );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsStringsAsync( resourceName, offset, pageSize ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsStringsAsync( resourceName, offset, pageSize );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(resourceName, EthosProxyClient.DEFAULT_VERSION, offset, pageSize);
@@ -488,7 +526,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( resourceName, version, offset, EthosProxyClient.DEFAULT_PAGE_SIZE );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsStringsAsync( resourceName, version, offset ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsStringsAsync( resourceName, version, offset );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(resourceName, version, offset, EthosProxyClient.DEFAULT_PAGE_SIZE );
@@ -508,7 +548,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( resourceName, version, offset, pageSize );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsStringsAsync( resourceName, version, offset, pageSize ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsStringsAsync( resourceName, version, offset, pageSize );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(resourceName, version, offset, pageSize );
@@ -525,7 +567,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( anyString(), anyString(), anyInt(), anyInt());
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsJsonNodesAsync( resourceName, offset ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsJsonNodesAsync( resourceName, offset );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(anyString(), anyString(), anyInt(), anyInt());
@@ -543,7 +587,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( resourceName, EthosProxyClient.DEFAULT_VERSION, offset, pageSize );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsJsonNodesAsync( resourceName, offset, pageSize ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsJsonNodesAsync( resourceName, offset, pageSize );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(resourceName, EthosProxyClient.DEFAULT_VERSION, offset, pageSize);
@@ -562,7 +608,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( resourceName, version, offset, EthosProxyClient.DEFAULT_PAGE_SIZE );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsJsonNodesAsync( resourceName, version, offset ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsJsonNodesAsync( resourceName, version, offset );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(resourceName, version, offset, EthosProxyClient.DEFAULT_PAGE_SIZE);
@@ -582,7 +630,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( resourceName, version, offset, pageSize );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getAllPagesFromOffsetAsJsonNodesAsync( resourceName, version, offset, pageSize ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getAllPagesFromOffsetAsJsonNodesAsync( resourceName, version, offset, pageSize );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset(resourceName, version, offset, pageSize);
@@ -600,7 +650,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPages( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesAsync( resourceName, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesAsync( resourceName, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( anyString(), anyString(), anyInt(), anyInt()  );
@@ -619,7 +671,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPages( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numPages );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesAsync( resourceName, version, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesAsync( resourceName, version, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numPages );
@@ -639,7 +693,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPages( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, numPages );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesAsync( resourceName, pageSize, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesAsync( resourceName, pageSize, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, numPages );
@@ -655,13 +711,15 @@ class EthosProxyClientAsyncTest {
         int pageSize = 17;
         int numPages = 40;
         // Run the test with a null resourceName string.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesAsync( resourceName, version, pageSize, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesAsync( resourceName, version, pageSize, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
         assertTrue( responseList != null );
         assertTrue( responseList.isEmpty() );
 
         // Run the test again with an empty resourceName string..
         resourceName = "";
-        responseList = spyEthosProxyClientAsync.getPagesAsync( resourceName, version, pageSize, numPages ).join();
+        completableFuture = spyEthosProxyClientAsync.getPagesAsync( resourceName, version, pageSize, numPages );
+        responseList = completableFuture.join();
         assertTrue( responseList != null );
         assertTrue( responseList.isEmpty() );
     }
@@ -678,7 +736,9 @@ class EthosProxyClientAsyncTest {
         // Return the pager when the method under test calls prepareForPaging() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPages( resourceName, version, pageSize );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesAsync( resourceName, version, pageSize, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesAsync( resourceName, version, pageSize, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPages(resourceName, version, pageSize);
@@ -699,7 +759,9 @@ class EthosProxyClientAsyncTest {
                 resourceName, version, pageSize, numPages
         );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesAsync( resourceName, version, pageSize, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesAsync( resourceName, version, pageSize, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages(
@@ -720,7 +782,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getPages( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getPagesAsStringsAsync( resourceName, numPages ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getPagesAsStringsAsync( resourceName, numPages );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( anyString(), anyString(), anyInt(), anyInt() );
@@ -740,7 +804,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getPages( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numPages );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getPagesAsStringsAsync( resourceName, version, numPages ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getPagesAsStringsAsync( resourceName, version, numPages );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numPages );
@@ -760,8 +826,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getPages( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, numPages );
         // Run the test.
-        List<String> responseList =
-                spyEthosProxyClientAsync.getPagesAsStringsAsync( resourceName, pageSize, numPages ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getPagesAsStringsAsync( resourceName, pageSize, numPages );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, numPages );
@@ -782,7 +849,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getPages( resourceName, version, pageSize, numPages );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getPagesAsStringsAsync( resourceName, version, pageSize, numPages ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getPagesAsStringsAsync( resourceName, version, pageSize, numPages );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( resourceName, version, pageSize, numPages );
@@ -802,7 +871,9 @@ class EthosProxyClientAsyncTest {
                 anyString(), anyString(), anyInt(), anyInt()
         );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getPagesAsJsonNodesAsync( resourceName, numPages ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getPagesAsJsonNodesAsync( resourceName, numPages );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages(
@@ -823,8 +894,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPages( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numPages );
         // Run the test.
-        List<JsonNode> responseList =
-                spyEthosProxyClientAsync.getPagesAsJsonNodesAsync( resourceName, version, numPages ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getPagesAsJsonNodesAsync( resourceName, version, numPages );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numPages );
@@ -843,7 +915,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPages( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize , numPages );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getPagesAsJsonNodesAsync( resourceName, pageSize, numPages ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getPagesAsJsonNodesAsync( resourceName, pageSize, numPages );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize , numPages );
@@ -863,8 +937,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPages( resourceName, version, pageSize , numPages );
         // Run the test.
-        List<JsonNode> responseList =
-                spyEthosProxyClientAsync.getPagesAsJsonNodesAsync( resourceName, version, pageSize, numPages ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getPagesAsJsonNodesAsync( resourceName, version, pageSize, numPages );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( resourceName, version, pageSize , numPages );
@@ -885,7 +960,9 @@ class EthosProxyClientAsyncTest {
             anyString(), anyString(), anyInt(), anyInt(), anyInt()
         );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, offset, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, offset, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset(
@@ -907,7 +984,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPagesFromOffset( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, offset, numPages );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, pageSize, offset, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, pageSize, offset, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, offset, numPages );
@@ -927,7 +1006,9 @@ class EthosProxyClientAsyncTest {
         // Return the testResponseList when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPagesFromOffset( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, offset, numPages );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, offset, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, offset, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, offset, numPages );
@@ -944,15 +1025,15 @@ class EthosProxyClientAsyncTest {
         int offset = 25;
         int numPages = 40;
         // Run the test with a null resourceName string.
-        List<EthosResponse> responseList =
-            spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
         assertTrue( responseList != null );
         assertTrue( responseList.isEmpty() );
 
         // Run the test again with an empty resourceName string..
         resourceName = "";
-        responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsync(
-                resourceName, version, pageSize, offset, numPages ).join();
+        completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages );
+        responseList = completableFuture.join();
         assertTrue( responseList != null );
         assertTrue( responseList.isEmpty() );
     }
@@ -970,7 +1051,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPages( resourceName, version, pageSize );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPages(resourceName, version, pageSize);
@@ -991,8 +1074,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPages( resourceName, version, pageSize, numPages );
         // Run the test.
-        List<EthosResponse> responseList =
-                spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPages( resourceName, version, pageSize, numPages );
@@ -1013,7 +1097,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( resourceName, version, offset, pageSize );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset( resourceName, version, offset, pageSize );
@@ -1036,7 +1122,9 @@ class EthosProxyClientAsyncTest {
                 resourceName, version, pageSize, offset, numPages
         );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsync( resourceName, version, pageSize, offset, numPages );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset(
@@ -1058,7 +1146,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getPagesFromOffset( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsStringsAsync( resourceName, offset, numPages ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsStringsAsync( resourceName, offset, numPages );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset(
@@ -1082,7 +1172,9 @@ class EthosProxyClientAsyncTest {
                 anyString(), anyString(), anyInt(), anyInt()
         );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsStringsAsync( resourceName, pageSize, offset, numPages ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsStringsAsync( resourceName, pageSize, offset, numPages );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset(
@@ -1107,7 +1199,9 @@ class EthosProxyClientAsyncTest {
                 anyString(), anyString(), anyInt(), anyInt()
         );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsStringsAsync( resourceName, version, offset, numPages ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsStringsAsync( resourceName, version, offset, numPages );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset(
@@ -1131,7 +1225,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getPagesFromOffset( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsStringsAsync( resourceName, version, pageSize, offset, numPages ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsStringsAsync( resourceName, version, pageSize, offset, numPages );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset( anyString(), anyString(), anyInt(), anyInt() );
@@ -1151,7 +1247,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPagesFromOffset( anyString(), anyString(), anyInt(), anyInt(), anyInt() );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsJsonNodesAsync( resourceName, offset, numPages ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsJsonNodesAsync( resourceName, offset, numPages );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset( anyString(), anyString(), anyInt(), anyInt(), anyInt() );
@@ -1171,9 +1269,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPagesFromOffset( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, offset , numPages );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsJsonNodesAsync(
-                resourceName, pageSize, offset, numPages
-        ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsJsonNodesAsync( resourceName, pageSize, offset, numPages );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, offset , numPages );
@@ -1193,7 +1291,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPagesFromOffset( anyString(), anyString(), anyInt(), anyInt(), anyInt() );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsJsonNodesAsync( resourceName, version, offset, numPages ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsJsonNodesAsync( resourceName, version, offset, numPages );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset( anyString(), anyString(), anyInt(), anyInt(), anyInt() );
@@ -1213,9 +1313,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getPagesFromOffset( resourceName, version, pageSize, offset, numPages );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getPagesFromOffsetAsJsonNodesAsync(
-                resourceName, version, pageSize, offset, numPages
-        ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getPagesFromOffsetAsJsonNodesAsync( resourceName, version, pageSize, offset, numPages );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getPagesFromOffset( resourceName, version, pageSize, offset, numPages );
@@ -1233,7 +1333,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getRows( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsAsync( resourceName, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsAsync( resourceName, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( anyString(), anyString(), anyInt(), anyInt() );
@@ -1252,7 +1354,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getRows( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numRows );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsAsync( resourceName, version, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsAsync( resourceName, version, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numRows );
@@ -1270,7 +1374,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getRows( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, numRows );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsAsync( resourceName, pageSize, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsAsync( resourceName, pageSize, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, numRows );
@@ -1285,13 +1391,15 @@ class EthosProxyClientAsyncTest {
         int pageSize = 17;
         int numRows = 50;
         // Run the test with a null resourceName string.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsAsync( resourceName, version, pageSize, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsAsync( resourceName, version, pageSize, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
         assertTrue( responseList != null );
         assertTrue( responseList.isEmpty() );
 
         // Run the test again with an empty resourceName string..
         resourceName = "";
-        responseList = spyEthosProxyClientAsync.getRowsAsync( resourceName, version, pageSize, numRows ).join();
+        completableFuture = spyEthosProxyClientAsync.getRowsAsync( resourceName, version, pageSize, numRows );
+        responseList = completableFuture.join();
         assertTrue( responseList != null );
         assertTrue( responseList.isEmpty() );
     }
@@ -1307,7 +1415,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPages( resourceName, version, pageSize );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsAsync( resourceName, version, pageSize, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsAsync( resourceName, version, pageSize, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPages(resourceName, version, pageSize);
@@ -1327,7 +1437,9 @@ class EthosProxyClientAsyncTest {
 
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getRows( resourceName, version, pageSize, numRows );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsAsync( resourceName, version, pageSize, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsAsync( resourceName, version, pageSize, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows(
@@ -1348,7 +1460,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getRows( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getRowsAsStringsAsync( resourceName, numRows ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getRowsAsStringsAsync( resourceName, numRows );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( anyString(), anyString(), anyInt(), anyInt() );
@@ -1367,7 +1481,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getRows( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numRows );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getRowsAsStringsAsync( resourceName, version, numRows ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getRowsAsStringsAsync( resourceName, version, numRows );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numRows );
@@ -1387,7 +1503,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getRows( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, numRows );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getRowsAsStringsAsync( resourceName, pageSize, numRows ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getRowsAsStringsAsync( resourceName, pageSize, numRows );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, numRows );
@@ -1407,7 +1525,8 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getRows( resourceName, version, pageSize, numRows );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getRowsAsStringsAsync( resourceName, version, pageSize, numRows ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getRowsAsStringsAsync( resourceName, version, pageSize, numRows );
+        List<String> responseList = completableFuture.join();
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( resourceName, version, pageSize, numRows );
@@ -1425,7 +1544,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(mockedResponseList).when(spyEthosProxyClientAsync).getRows( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getRowsAsJsonNodesAsync( resourceName, numRows ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getRowsAsJsonNodesAsync( resourceName, numRows );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( anyString(), anyString(), anyInt(), anyInt() );
@@ -1445,7 +1566,8 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(mockedResponseList).when(spyEthosProxyClientAsync).getRows( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numRows );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getRowsAsJsonNodesAsync( resourceName, version, numRows ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getRowsAsJsonNodesAsync( resourceName, version, numRows );
+        List<JsonNode> responseList = completableFuture.join();
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, numRows );
@@ -1465,7 +1587,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(mockedResponseList).when(spyEthosProxyClientAsync).getRows( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, numRows );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getRowsAsJsonNodesAsync( resourceName, pageSize, numRows ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getRowsAsJsonNodesAsync( resourceName, pageSize, numRows );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, numRows );
@@ -1485,7 +1609,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(mockedResponseList).when(spyEthosProxyClientAsync).getRows( resourceName, version, pageSize, numRows );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getRowsAsJsonNodesAsync( resourceName, version, pageSize, numRows ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getRowsAsJsonNodesAsync( resourceName, version, pageSize, numRows );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( resourceName, version, pageSize, numRows );
@@ -1506,8 +1632,9 @@ class EthosProxyClientAsyncTest {
                 anyString(), anyString(), anyInt(), anyInt(), anyInt()
         );
         // Run the test.
-        List<EthosResponse> responseList =
-                spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, offset, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, offset, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset(
@@ -1529,7 +1656,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getRowsFromOffset( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, offset, numRows );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, pageSize, offset, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, pageSize, offset, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, offset, numRows );
@@ -1549,7 +1678,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getRowsFromOffset( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, offset, numRows );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, offset, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, offset, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, offset, numRows );
@@ -1566,13 +1697,15 @@ class EthosProxyClientAsyncTest {
         int offset = 25;
         int numRows = 50;
         // Run the test with a null resourceName string.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
         assertTrue( responseList != null );
         assertTrue( responseList.isEmpty() );
 
         // Run the test again with an empty resourceName string..
         resourceName = "";
-        responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows ).join();
+        completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows );
+        responseList = completableFuture.join();
         assertTrue( responseList != null );
         assertTrue( responseList.isEmpty() );
     }
@@ -1589,7 +1722,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPages( resourceName, version, pageSize );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPages(resourceName, version, pageSize);
@@ -1610,8 +1745,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getRows( resourceName, version, pageSize, numRows );
         // Run the test.
-        List<EthosResponse> responseList =
-                spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRows( resourceName, version, pageSize, numRows );
@@ -1632,7 +1768,9 @@ class EthosProxyClientAsyncTest {
         // Return the expected object when mocking the given method.
         Mockito.doReturn(expectedResponseList).when(spyEthosProxyClientAsync).getAllPagesFromOffset( resourceName, version, offset, pageSize );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getAllPagesFromOffset( resourceName, version, offset, pageSize );
@@ -1655,7 +1793,9 @@ class EthosProxyClientAsyncTest {
                 resourceName, version, pageSize, offset, numRows
         );
         // Run the test.
-        List<EthosResponse> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows ).join();
+        CompletableFuture<List<EthosResponse>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsync( resourceName, version, pageSize, offset, numRows );
+        List<EthosResponse> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked methods were called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset(
@@ -1676,7 +1816,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getRowsFromOffset( anyString(), anyString(), anyInt(), anyInt(), anyInt() );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsStringsAsync( resourceName, offset, numRows ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsStringsAsync( resourceName, offset, numRows );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset(
@@ -1701,9 +1843,9 @@ class EthosProxyClientAsyncTest {
                 resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, offset, numRows
         );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsStringsAsync(
-                resourceName, pageSize, offset, numRows
-        ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsStringsAsync( resourceName, pageSize, offset, numRows );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset( resourceName, EthosProxyClient.DEFAULT_VERSION, pageSize, offset, numRows );
@@ -1726,9 +1868,9 @@ class EthosProxyClientAsyncTest {
                 resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, offset, numRows
         );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsStringsAsync(
-                resourceName, version, offset, numRows
-        ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsStringsAsync( resourceName, version, offset, numRows );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset( resourceName, version, EthosProxyClient.DEFAULT_PAGE_SIZE, offset, numRows );
@@ -1750,9 +1892,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(testResponseList).when(spyEthosProxyClientAsync).getRowsFromOffset( resourceName, version, pageSize, offset, numRows );
         // Run the test.
-        List<String> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsStringsAsync(
-                resourceName, version, pageSize, offset, numRows
-        ).join();
+        CompletableFuture<List<String>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsStringsAsync( resourceName, version, pageSize, offset, numRows );
+        List<String> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset( resourceName, version, pageSize, offset, numRows );
@@ -1773,7 +1915,9 @@ class EthosProxyClientAsyncTest {
                 anyString(), anyString(), anyInt(), anyInt()
         );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsJsonNodesAsync( resourceName, offset, numRows ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsJsonNodesAsync( resourceName, offset, numRows );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset(
@@ -1796,7 +1940,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(mockedResponseList).when(spyEthosProxyClientAsync).getRowsFromOffset( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsJsonNodesAsync( resourceName, pageSize, offset, numRows ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsJsonNodesAsync( resourceName, pageSize, offset, numRows );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset( anyString(), anyString(), anyInt(), anyInt() );
@@ -1816,7 +1962,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(mockedResponseList).when(spyEthosProxyClientAsync).getRowsFromOffset( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsJsonNodesAsync( resourceName, version, offset, numRows ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsJsonNodesAsync( resourceName, version, offset, numRows );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset( anyString(), anyString(), anyInt(), anyInt() );
@@ -1839,7 +1987,9 @@ class EthosProxyClientAsyncTest {
         // Return the testEthosResponse when the method under test calls the overloaded get() method.
         Mockito.doReturn(mockedResponseList).when(spyEthosProxyClientAsync).getRowsFromOffset( anyString(), anyString(), anyInt(), anyInt() );
         // Run the test.
-        List<JsonNode> responseList = spyEthosProxyClientAsync.getRowsFromOffsetAsJsonNodesAsync( resourceName, version, pageSize, offset, numRows ).join();
+        CompletableFuture<List<JsonNode>> completableFuture = spyEthosProxyClientAsync.getRowsFromOffsetAsJsonNodesAsync( resourceName, version, pageSize, offset, numRows );
+        List<JsonNode> responseList = completableFuture.join();
+
         // Evaluate the results:
         // Verify the mocked get() method was called 1 time.
         Mockito.verify(spyEthosProxyClientAsync, Mockito.times(1)).getRowsFromOffset( anyString(), anyString(), anyInt(), anyInt() );
