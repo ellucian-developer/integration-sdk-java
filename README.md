@@ -434,7 +434,7 @@ EthosMessagesClient mainMessagesClient = mainClientBuilder.buildMessagesClient()
 List<ChangeNotification> cnList = mainMessagesClient.consume();  
 ```
 
-### Using the EISDK Generated Java Object Library
+### Using the EISDK Generated Strongly Typed Object Library
 
 The EISDK Java object library provides request/response objects that can be used with the EISDK 
 when making requests.  This enables developers to work with Java objects rather than JSON data or JsonNode.
