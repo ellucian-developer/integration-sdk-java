@@ -442,7 +442,8 @@ when making requests.  This enables developers to work with Java objects rather 
 Use the EISDK Java object library to get an API resource:
 
 ```java
-EthosResponse<StudentCohorts> ethosResponse = ethosProxyClient.getById("student-cohorts", getByIdGUID, StudentCohorts.class);
+String guid = "11111111-1111-1111-1111-111111111111";
+EthosResponse<StudentCohorts> ethosResponse = ethosProxyClient.getById("student-cohorts", guid, StudentCohorts.class);
 StudentCohorts studentCohorts = ethosResponse.getContentAsType();
 // Use getter methods to access properties on studentCohorts...
 System.out.println( "Title: " + studenCohorts.getTitle() );
