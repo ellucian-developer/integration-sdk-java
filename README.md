@@ -23,9 +23,9 @@ This SDK is available for download from the [Maven Central Repository](https://c
 The following is the Maven dependency for this SDK:
 ```
 <dependency>
-    <groupId>com.ellucian.ethos.integration.sdk</groupId>
-    <artifactId>integration-sdk-java</artifactId>
-    <version>0.3.0</version> <!-- Check the version and use the latest -->
+  <groupId>com.ellucian.ethos.integration.sdk</groupId>
+  <artifactId>integration-sdk-java</artifactId>
+  <version>1.0.0</version> <!-- Check the version and use the latest -->
 </dependency>
 ```
 
