@@ -115,14 +115,6 @@ public class EthosResponse<T> {
     }
 
     /**
-     * Gets the content as a generic type, if specified with this class.
-     * @return The response body content as a generic type.
-     */
-    public T getContentAsType() {
-        return typedContent;
-    }
-
-    /**
      * Gets the URL which the corresponding request was made for.
      * @return the requested URL.
      */
