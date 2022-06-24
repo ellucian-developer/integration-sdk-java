@@ -32,7 +32,7 @@
     <scm>
         <connection>scm:git:git://github.com/ellucian-developer/integration-sdk-java.git</connection>
         <developerConnection>scm:git:ssh://github.com/ellucian-developer/integration-sdk-java.git</developerConnection>
-        <url>http://github.com/github.com/ellucian-developer/integration-sdk-java/tree/main</url>
+        <url>http://github.com/ellucian-developer/integration-sdk-java/tree/main</url>
         <tag>integration-sdk-java-1.0.0</tag>
     </scm>
     <distributionManagement>
