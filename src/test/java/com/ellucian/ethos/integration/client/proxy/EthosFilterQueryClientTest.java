@@ -1670,4 +1670,256 @@ public class EthosFilterQueryClientTest {
         Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getWithQAPI( resource, EthosProxyClient.DEFAULT_VERSION, someQAPIRequestBody );
     }
 
+    @Test
+    public void getPagesWithQAPITest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        String requestBody = "{\"someLabel\":\"someValue\"}";
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, EthosProxyClient.DEFAULT_VERSION, requestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesWithQAPI(resourceName, requestBody);
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, EthosProxyClient.DEFAULT_VERSION, requestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+    }
+
+    @Test
+    public void getPagesWithQAPIUsingVersionTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        String requestBody = "{\"someLabel\":\"someValue\"}";
+        String version = "someVersion";
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, version, requestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesWithQAPI(resourceName, version, requestBody);
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, version, requestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+    }
+
+    @Test
+    public void getPagesWithQAPIUsingVersionAndPageSizeTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        String version = "someVersion";
+        String requestBody = "{\"someLabel\":\"someValue\"}";
+        int pageSize = 1;
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, version, requestBody, pageSize, 0 );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesWithQAPI(resourceName, version, requestBody, pageSize);
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, version, requestBody, pageSize, 0 );
+    }
+
+    @Test
+    public void getPagesWithQAPIUsingJsonNodeRequestBody() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        ObjectNode requestBodyNode = JsonNodeFactory.instance.objectNode();
+        requestBodyNode.put("someLabel", "someValue");
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, EthosProxyClient.DEFAULT_VERSION, requestBodyNode, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesWithQAPI(resourceName, requestBodyNode);
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, EthosProxyClient.DEFAULT_VERSION, requestBodyNode, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+    }
+
+    @Test
+    public void getPagesWithQAPIUsingJsonNodeRequestBodyAndVersionTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        ObjectNode requestBodyNode = JsonNodeFactory.instance.objectNode();
+        requestBodyNode.put("someLabel", "someValue");
+        String version = "someVersion";
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, version, requestBodyNode, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesWithQAPI(resourceName, version, requestBodyNode);
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, version, requestBodyNode, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+    }
+
+    @Test
+    public void getPagesWithQAPIUsingJsonNodeRequestBodyAndVersionAndPageSizeTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        ObjectNode requestBodyNode = JsonNodeFactory.instance.objectNode();
+        requestBodyNode.put("someLabel", "someValue");
+        String version = "someVersion";
+        int pageSize = 1;
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, version, requestBodyNode, pageSize, 0 );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesWithQAPI(resourceName, version, requestBodyNode, pageSize);
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, version, requestBodyNode, pageSize, 0 );
+    }
+    
+    @Test
+    public void getPagesWithQAPIUsingGenericObjectRequestBodyTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resource = "someResource";
+        SomeQAPIRequestBody someQAPIRequestBody = new SomeQAPIRequestBody();
+        someQAPIRequestBody.setSomeProperty("someProperty");
+        // Return the expectedResponse when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resource, EthosProxyClient.DEFAULT_VERSION, someQAPIRequestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesWithQAPI( resource, someQAPIRequestBody );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resource, EthosProxyClient.DEFAULT_VERSION, someQAPIRequestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+    }
+
+    @Test
+    public void getPagesWithQAPIUsingGenericObjectRequestBodyUsingVersionTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resource = "someResource";
+        SomeQAPIRequestBody someQAPIRequestBody = new SomeQAPIRequestBody();
+        someQAPIRequestBody.setSomeProperty("someProperty");
+        String version = "someVersion";
+        // Return the expectedResponse when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resource, version, someQAPIRequestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesWithQAPI( resource, version, someQAPIRequestBody );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resource, version, someQAPIRequestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, 0 );
+    }
+
+    @Test
+    public void getPagesWithQAPIUsingGenericObjectRequestBodyUsingVersionAndPageSizeTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resource = "someResource";
+        SomeQAPIRequestBody someQAPIRequestBody = new SomeQAPIRequestBody();
+        someQAPIRequestBody.setSomeProperty("someProperty");
+        String version = "someVersion";
+        int pageSize = 1;
+        // Return the expectedResponse when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resource, version, someQAPIRequestBody, pageSize, 0 );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesWithQAPI( resource, version, someQAPIRequestBody, pageSize );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resource, version, someQAPIRequestBody, pageSize, 0 );
+    }
+
+    @Test
+    public void getPagesFromOffsetWithQAPIUsingVersionTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        String version = "someVersion";
+        String requestBody = "{\"someLabel\":\"someValue\"}";
+        int offset = 10;
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, version, requestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, offset );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesFromOffsetWithQAPI(resourceName, version, offset, requestBody);
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, version, requestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, offset );
+    }
+
+    @Test
+    public void getPagesFromOffsetWithQAPIUsingVersionAndPageSizeTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        String version = "someVersion";
+        String requestBody = "{\"someLabel\":\"someValue\"}";
+        int pageSize = 1;
+        int offset = 10;
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, version, requestBody, pageSize, offset );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesFromOffsetWithQAPI(resourceName, version, requestBody, pageSize, offset);
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, version, requestBody, pageSize, offset );
+    }
+
+    @Test
+    public void getPagesFromOffsetWithQAPIUsingJsonNodeRequestBodyAndVersionTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        ObjectNode requestBodyNode = JsonNodeFactory.instance.objectNode();
+        requestBodyNode.put("someLabel", "someValue");
+        String version = "someVersion";
+        int offset = 100;
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, version, requestBodyNode, EthosProxyClient.DEFAULT_PAGE_SIZE, offset );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesFromOffsetWithQAPI(resourceName, version, offset, requestBodyNode);
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, version, requestBodyNode, EthosProxyClient.DEFAULT_PAGE_SIZE, offset );
+    }
+
+    @Test
+    public void getPagesFromOffsetWithQAPIUsingJsonNodeRequestBodyAndVersionAndPageSizeTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        ObjectNode requestBodyNode = JsonNodeFactory.instance.objectNode();
+        requestBodyNode.put("someLabel", "someValue");
+        String version = "someVersion";
+        int offset = 100;
+        int pageSize = 1;
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, version, requestBodyNode, pageSize, offset );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesFromOffsetWithQAPI(resourceName, version, requestBodyNode, pageSize, offset );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, version, requestBodyNode, pageSize, offset );
+    }
+
+    @Test
+    public void getPagesFromOffsetWithQAPIUsingJsonNodeRequestBodyAndVersionThrowsExceptionTest() throws IOException {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            String resourceName = "someResource";
+            String version = "someVersion";
+            SomeQAPIRequestBody requestBody = null;
+            int offset = 100;
+            spyEthosFilterQueryClient.getPagesFromOffsetWithQAPI( resourceName, version, offset, requestBody );
+        });
+    }
+
+    @Test
+    public void getPagesFromOffsetWithQAPIUsingJsonNodeRequestBodyAndVersionAndPageSizeThrowsExceptionTest() throws IOException {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            String resourceName = "someResource";
+            String version = "someVersion";
+            SomeQAPIRequestBody requestBody = null;
+            int offset = 100;
+            int pageSize = 1;
+            spyEthosFilterQueryClient.getPagesFromOffsetWithQAPI( resourceName, version, requestBody, pageSize, offset );
+        });
+    }
+
+    @Test
+    public void getPagesFromOffsetWithQAPIUsingGenericObjectRequestBodyAndVersionTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        SomeQAPIRequestBody someQAPIRequestBody = new SomeQAPIRequestBody();
+        someQAPIRequestBody.setSomeProperty("someProperty");
+        String version = "someVersion";
+        int offset = 100;
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, version, someQAPIRequestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, offset );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesFromOffsetWithQAPI(resourceName, version, offset, someQAPIRequestBody );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, version, someQAPIRequestBody, EthosProxyClient.DEFAULT_PAGE_SIZE, offset );
+    }
+
+    @Test
+    public void getPagesFromOffsetWithQAPIUsingGenericObjectRequestBodyAndVersionAndPageSizeTest() throws IOException {
+        List<EthosResponse> expectedEthosResponse = buildEthosResponseList();
+        String resourceName = "someResource";
+        SomeQAPIRequestBody someQAPIRequestBody = new SomeQAPIRequestBody();
+        someQAPIRequestBody.setSomeProperty("someProperty");
+        String version = "someVersion";
+        int offset = 100;
+        int pageSize = 1;
+        // Return the expectedResponse List when the method under test calls the overloaded get() method.
+        Mockito.doReturn(expectedEthosResponse).when(spyEthosFilterQueryClient).getPagesFromOffsetWithQAPI( resourceName, version, someQAPIRequestBody, pageSize, offset );
+        // Run the test.
+        List<EthosResponse> ethosResponseList = spyEthosFilterQueryClient.getPagesFromOffsetWithQAPI(resourceName, version, someQAPIRequestBody, pageSize, offset );
+        // Verify the result.
+        Mockito.verify(spyEthosFilterQueryClient, Mockito.times(1)).getPagesFromOffsetWithQAPI( resourceName, version, someQAPIRequestBody, pageSize, offset );
+    }
+
 }
