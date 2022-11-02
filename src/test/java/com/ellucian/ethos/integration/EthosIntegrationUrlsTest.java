@@ -44,9 +44,21 @@ public class EthosIntegrationUrlsTest {
     }
 
     @Test
+    void testQapiCanada() {
+        String url = EthosIntegrationUrls.qapis(SupportedRegions.CANADA, "persons");
+        assertEquals(url, "https://integrate.elluciancloud.ca/qapi/persons" );
+    }
+
+    @Test
     void testQapiPaging() {
         String url = EthosIntegrationUrls.qapiPaging(SupportedRegions.US, "persons", 20, 30);
         assertEquals(url, "https://integrate.elluciancloud.com/qapi/persons?offset=20&limit=30" );
+    }
+
+    @Test
+    void testQapiPagingCanada() {
+        String url = EthosIntegrationUrls.qapiPaging(SupportedRegions.CANADA, "persons", 20, 30);
+        assertEquals(url, "https://integrate.elluciancloud.ca/qapi/persons?offset=20&limit=30" );
     }
 
 }

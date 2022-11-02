@@ -12,3 +12,4 @@ APR 2021 | 0.4.0 | Added criteria filter and named query support for additional 
 SEPT 2021 | 0.4.0 | Added criteria filter support for Banner business API requests.
 MAR 2022 | 1.0.0 | Added support in the EthosProxyClient and EthosFilterQueryClient for the associated generic type object library.  This enables requests/responses to be handled with schema-based generated JavaBeans/POJOs.
 JUN 2022 | 1.0.0 | Added support in the EthosFilterQueryClient for QAPI POST requests.
+NOV 2022 | 1.0.1 | Updated the Jackson Databind dependent library to version 2.13.4.2 to address two vulnerabilities:  https://nvd.nist.gov/vuln/detail/CVE-2022-42003 and https://nvd.nist.gov/vuln/detail/CVE-2022-42004
