@@ -5,7 +5,7 @@
 
     <groupId>com.ellucian.ethos.integration.sdk</groupId>
     <artifactId>integration-sdk-java</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <name>Ellucian Ethos Integration Java SDK</name>
@@ -33,7 +33,7 @@
         <connection>scm:git:git://github.com/ellucian-developer/integration-sdk-java.git</connection>
         <developerConnection>scm:git:ssh://github.com/ellucian-developer/integration-sdk-java.git</developerConnection>
         <url>http://github.com/ellucian-developer/integration-sdk-java/tree/main</url>
-        <tag>integration-sdk-java-1.0.1</tag>
+        <tag>integration-sdk-java-1.0.2</tag>
     </scm>
     <distributionManagement>
         <snapshotRepository>

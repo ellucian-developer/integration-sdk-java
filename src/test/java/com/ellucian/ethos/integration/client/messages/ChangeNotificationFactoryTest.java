@@ -31,10 +31,12 @@ public class ChangeNotificationFactoryTest {
             "    }," +
             "    \"operation\": \"created\"," +
             "    \"contentType\": \"resource-representation\"," +
+            "    \"messageType\": \"change-notification\"," +
             "    \"content\": {" +
             "        \"id\": \"fee12eb6-dae1-456b-a7c4-063458617478\"" +
             "    }" +
             "}";
+
 
     @Test
     void testCreateCNFromJson() throws JsonProcessingException {

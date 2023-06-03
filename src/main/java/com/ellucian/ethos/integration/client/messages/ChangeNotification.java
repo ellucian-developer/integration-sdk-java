@@ -38,6 +38,11 @@ public class ChangeNotification {
     private JsonNode content;
 
     /**
+     * The message type
+     */
+    private String messageType;
+
+    /**
      * Creates an instance of a change-notification.
      */
     public ChangeNotification(){}
@@ -129,5 +134,13 @@ public class ChangeNotification {
         } catch (JsonProcessingException ex) {
             return super.toString();
         }
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
     }
 }
